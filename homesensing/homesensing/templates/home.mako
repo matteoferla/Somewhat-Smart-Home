@@ -16,7 +16,7 @@
         <div class="col-12">
             <h3>Latest values</h3>
 
-            <div id="latest" class="card-group"></div>
+            <div id="latest" class="card-columns"></div>
             <p>View:</p>
             <div class="btn-group" role="group" id="changeRange">
                 <button type="button" class="btn btn-secondary" data-delta="1">Last 24 hours</button>

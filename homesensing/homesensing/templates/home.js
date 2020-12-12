@@ -93,7 +93,8 @@ class Measurements {
                         ${key}
                       </div>
                         <div class="card-body">
-                          <h3 class="card-title">${this.latest[key]}${this.getUnit(key)}</h3>
+                          <h3 class="card-title">${Number(this.latest[key].toFixed(1))}
+                                                 ${this.getUnit(key)}</h3>
                           <p class="card-text text-muted">${this.getExtras(key)}</p>
                         </div>
                       </div>`);
@@ -112,14 +113,14 @@ class Measurements {
             return accumulator
             }, {});
 
-        const sensorLines = {"test:A": {color: '#ff7f0e'},
-                            // old.
-                            'Outside temperature': {color: '#ff7f0e', dash: 'dashdot'},
-                            'Outside humidity': {color: '#1f77b4', dash: 'dashdot'},
-                            'Humidity' : {color: '#1f77b4'},
-                            'CO_2': {color: '#8c564b'},
-                            'TVOC': {color: '#2ca02c'}
-        };
+        // const sensorLines = {"test:A": {color: '#ff7f0e'},
+        //                     // old.
+        //                     'Outside temperature': {color: '#ff7f0e', dash: 'dashdot'},
+        //                     'Outside humidity': {color: '#1f77b4', dash: 'dashdot'},
+        //                     'Humidity' : {color: '#1f77b4'},
+        //                     'CO_2': {color: '#8c564b'},
+        //                     'TVOC': {color: '#2ca02c'}
+        // };
         // {color: '#ff7f0e', dash: 'dashdot'}
         const traces = Object.entries(transposed)
                              .map(([sensor, {datetimes, values}], i) => ({
