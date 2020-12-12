@@ -10,14 +10,18 @@ This repo contains several projects.
 There are a few things I do on every Pi:
 
 * Make a file saying who the Pi is
-* Install Conda
 * Install Jupyter notebook and make it run at start-up
 * Slack message of it's IP address
+* etc.
 
 ## Furbexa
-...
+
+> TODO move data over and collect photos
 
 ## Homesensing
+
+> TODO this project is not up yet
+
 This has two parts.
 
 * Miscellaneous Raspberry Pis across the house with different sensors
@@ -26,7 +30,7 @@ This has two parts.
 ## Webservers
 
 
-> See LINK TO REPOS
+> TODO See LINK TO REPOS
 
 My main webservers are actually on a different Pi namely, a Pi 4.
 However, I do not want to stress too much even if it's 4 GB.
