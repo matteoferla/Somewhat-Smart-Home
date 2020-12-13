@@ -27,6 +27,10 @@ Using system python3, namely `/usr/bin/python3` as opposed to berryconda:
     sudo apt-get -y  install python3-pip
     /usr/bin/pip3 install jupyter RPi.GPIO waitress flask Flask-Ask Flask-SQLAlchemy beautifulsoup4 Pillow picamera
 
+Git:
+
+    sudo apt-get install git
+
 ## Jupyter
 
 ### Install jupyter

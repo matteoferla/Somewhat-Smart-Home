@@ -5,7 +5,7 @@ This repo contains several projects.
 
 ## Set-up
 
-> See [setup](setup.md)
+> See [setup](setting_up.md)
 
 There are a few things I do on every Pi:
 

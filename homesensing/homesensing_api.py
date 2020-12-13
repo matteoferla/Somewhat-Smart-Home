@@ -1,4 +1,4 @@
-import requests
+import requests, os
 import datetime as dt
 from typing import Optional
 
@@ -19,6 +19,30 @@ class HomieAPI:
         reply = requests.get(f'{self.base_url}/read', {'delta': delta})
         return self.get_json(reply)
 
+    def store(self,
+              sensor: str,
+              filename: str,
+              datetime: Optional[dt.datetime] = None):
+        isodate = self.isodatify(datetime)
+        extension = os.path.splitext(filename)[1]
+        reply = requests.post(f'{self.base_url}/store', {'key': self.key,
+                                                         'extension': extension,
+                                                         'datetime': isodate,
+                                                         'sensor': sensor},
+                              files={'photo': open(filename, 'rb')}
+                              )
+        return self.get_json(reply)
+
+    def isodatify(self, datetime):
+        if datetime is None:
+            return dt.datetime.now().isoformat()
+        elif isinstance(datetime, str):
+            return datetime
+        elif isinstance(datetime, dt.datetime):
+            return datetime.isoformat()
+        else:
+            raise ValueError
+
     def record(self, sensor: str, value: float, datetime: Optional[dt.datetime] = None):
         """
         >>> homie.record(sensor='test:A', value=34)
@@ -27,10 +51,7 @@ class HomieAPI:
         :param value:
         :return:
         """
-        if datetime is None:
-            isodate = dt.datetime.now().isoformat()
-        else:
-            isodate = datetime.isoformat()
+        isodate = self.isodatify(datetime)
         reply = requests.get(f'{self.base_url}/record', {'key': self.key,
                                                          'datetime': isodate,
                                                          'sensor': sensor,
