@@ -10,6 +10,11 @@ $( document ).ready(() =>{
     }
     );
 
+    $('#scrollDelta').change((event) => {
+        const delta = parseInt($(event.target).val());
+        window.measurements.getData(delta);
+    });
+
 });
 
 class Measurements {
@@ -60,6 +65,7 @@ class Measurements {
                 lineDetails.dash = 'dashdot';
             }
         }
+        return lineDetails;
         //{"test:A": {'id': '1', 'sensor': 'test:A', 'location': 'localhosted', 'model': 'None', 'unit': '°C',
         //             //                  'graph_color': '#c0c0c0', 'dashed': 'True', 'axis': 'hundred'},
     }
@@ -133,11 +139,13 @@ class Measurements {
                                                                         })
                              );
 
+        window.traces = traces;
+
 
 var layout = {
   title: 'Measurements',
   xaxis: {domain: [0.15, 0.7]},
-  yaxis: {title: 'Temperature [°C]', range: [5,30], dtick: 1},
+  yaxis: {title: 'Unit A', range: [0,100], dtick: 5},
   // yaxis2: {
   //   title: 'Humidity [%]',
   //   overlaying: 'y',

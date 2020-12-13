@@ -19,15 +19,17 @@
             <div id="latest" class="card-columns"></div>
             <p>View:</p>
             <div class="btn-group" role="group" id="changeRange">
-                <button type="button" class="btn btn-secondary" data-delta="1">Last 24 hours</button>
-                <button type="button" class="btn btn-secondary" data-delta="3">Last 3 days</button>
-                <button type="button" class="btn btn-secondary" data-delta="7">Last week</button>
-                <button type="button" class="btn btn-secondary" data-delta="30">Last Month</button>
-                <button type="button" class="btn btn-secondary" data-delta="365">Last Year</button>
+                <button type="button" class="btn btn-outline-secondary" data-delta="1">Last 24 hours</button>
+                <button type="button" class="btn btn-outline-secondary" data-delta="3">Last 3 days</button>
+                <button type="button" class="btn btn-outline-secondary" data-delta="7">Last week</button>
+                <button type="button" class="btn btn-outline-secondary" data-delta="30">Last Month</button>
+                <button type="button" class="btn btn-outline-secondary" data-delta="90">Last Quarter</button>
+                <button type="button" class="btn btn-outline-secondary" data-delta="365">Last Year</button>
+                <button type="button" class="btn btn-outline-secondary" data-delta="1000">Last 1e4 days</button>
             </div>
         </div>
     </div>
-    <div id="graph" style="height:100vh;width:100vw;"></div>
+    <div id="graph" style="height:100vh;width:80vw;"></div>
 </%block>
 
 

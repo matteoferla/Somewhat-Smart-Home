@@ -30,7 +30,7 @@
     <div class="starter-template">
       <div class="container">
         <div class="row">
-          <div class="col-xl-10 col-xl-offset-1">
+          <div class="col-xl-10 col-offset-xl-1">
 
     ## =================================================================================================================
             ${ next.body() }
