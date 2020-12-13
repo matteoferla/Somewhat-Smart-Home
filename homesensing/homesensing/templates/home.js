@@ -1,13 +1,13 @@
 // <%text>
 
-$( document ).ready(() =>{
+$(document).ready(() => {
     window.measurements = new Measurements();
     window.measurements.getData(7);
 
-    $('#changeRange button').click( (event) => {
-        const delta = parseInt($(event.target).data('delta'));
-        window.measurements.getData(delta);
-    }
+    $('#changeRange button').click((event) => {
+            const delta = parseInt($(event.target).data('delta'));
+            window.measurements.getData(delta);
+        }
     );
 
     $('#scrollDelta').change((event) => {
@@ -24,10 +24,11 @@ class Measurements {
         this.queryInfo = {};
         this.latest = {};
         this.sensorDetails = {};
+        this.photos = [];
     }
 
     getData(delta) {
-        jQuery.get(`/read?delta=${delta}`, {}, ({data, sensor, start, stop, sensor_details}) => {
+        jQuery.get(`/read?delta=${delta}`, {}, ({data, sensor, start, stop, sensor_details, photos}) => {
             //returned is {"data": [{"datetime": "2020-12-12T10:46:16.358734", "sensor": "test:A", "value": 100.0}],
             //             "start": "2020-12-07T10:46:27.094380",
             //             "stop": "2020-12-12T10:46:27.094407",
@@ -38,7 +39,18 @@ class Measurements {
             //
             this.queryInfo = {start: start, stop: stop, sensor: sensor};
             this.sensorDetails = sensor_details;
-            this.data = data.sort((a,b) => Date.parse(a.datetime) > Date.parse(b.datetime) ? 1 : -1);
+            this.data = data.sort((a, b) => Date.parse(a.datetime) > Date.parse(b.datetime) ? 1 : -1);
+            this.photos = photos.sort((a, b) => Date.parse(a.datetime) < Date.parse(b.datetime) ? 1 : -1)
+                                .reduce((accumulator, currentValue) => {
+                                        if (currentValue.path === 'None') {}
+                                        else if (accumulator[currentValue.sensor] === undefined) {
+                                            accumulator[currentValue.sensor] = [currentValue];
+                                        } else {
+                                            accumulator[currentValue.sensor].unshift(currentValue);
+                                        }
+
+                                        return accumulator
+                                    }, {});
             this.applyData();
         });
     };
@@ -46,9 +58,11 @@ class Measurements {
     applyData() {
         // called by .getData.
         // newest_last
-        console.log(this.__name___);
         if (Object.keys(this.latest).length === 0) {
-            this.latest = this.data.reduce((accumulator, currentValue) => {accumulator[currentValue.sensor] = currentValue.value; return accumulator}, {});
+            this.latest = this.data.reduce((accumulator, currentValue) => {
+                accumulator[currentValue.sensor] = currentValue.value;
+                return accumulator
+            }, {});
             this.showLatest();
         }
         this.plot();
@@ -88,13 +102,13 @@ class Measurements {
         }
     }
 
-    showLatest() {
+    showLatestMeasurements() {
         const latest_div = $('#latest');
         latest_div.children().detach();
-        latest_div.append(`<ul></ul>`);
-        const ul = latest_div.children('ul');
+        // latest_div.append(`<ul></ul>`);
+        // const ul = latest_div.children('ul');
         Object.keys(this.latest).forEach(key => {
-           ul.append(`<div class="card m-2">
+            latest_div.append(`<div class="card m-2">
                     <div class="card-header">
                         ${key}
                       </div>
@@ -107,17 +121,94 @@ class Measurements {
         });
     }
 
+
+    makePhotoCard(sensor, i) {
+        const entry = this.photos[sensor][i];
+        return `<div class="card m-2">
+                    <img src="${entry.path}" class="card-img-top" alt="${sensor}" data-sensor="${sensor}">
+                    <div class="card-body">
+                    <h3 class="card-title">${sensor}</h3>
+                        <p class="card-text" data-sensor="${sensor}">
+                            <div class="d-flex flex-row">
+                                <div class="align-self-start">
+                                <button class="btn btn-outline-success photobtn previous" data-sensor="${sensor}" data-goto="${i - 1}">                         
+                                    <i class="fas fa-chevron-left"></i></div>
+                                </button>
+                                <div class="flex-fill text-center">${entry.datetime}</div>
+                                <div class="align-self-end">
+                                    <button class="btn btn-outline-success photobtn next" data-sensor="${sensor}"  data-goto="${i + 1}">                         
+                                        <i class="fas fa-chevron-right"></i></div>
+                                    </button>
+                                </div>
+                            </div>
+                        </p>
+                    </div>
+                </div>`
+    }
+
+    showLatestPhoto() {
+        const group_div = $('#photocards');
+        group_div.children().detach();
+        Object.keys(this.photos).forEach((sensor) => {
+            const m = this;
+            group_div.append(this.makePhotoCard(sensor, this.photos[sensor].length - 1));
+            this.eventForNext.call(this, sensor);
+            $(`.next[data-sensor="${sensor}"]`).hide();
+
+        });
+    }
+
+    eventForNext(sensor) {
+        const mthis = this;
+        $(`.btn[data-sensor="${sensor}"]`).click(function(event) {
+                //const target = $(event.target);
+                const target = $(this);
+                const sensor = target.data('sensor');
+                const index = parseInt(target.data('goto'));
+                console.log(sensor, index);
+                if (index >= mthis.photos[sensor].length) {return 0}
+                if (index <= -1) {return 0}
+                const entry = mthis.photos[sensor][index];
+                $(`img[data-sensor="${sensor}"]`).attr('src', entry.path);
+                $(`.text-center[data-sensor="${sensor}"]`).html(entry.datetime);
+                $(`.photobtn[data-sensor="${sensor}"]`).each((i, el) => {
+                    if (i === 0) {
+                        if (index - 1 >= 0) {
+                            $(el).data('goto', index - 1);
+                            $(el).show();
+                        } else {
+                            $(el).hide();
+                        }
+                    }
+                    else {
+                        if (index + 1 < mthis.photos[sensor].length) {
+                            $(el).data('goto', index + 1);
+                            $(el).show();
+                        } else {
+                            $(el).hide();
+                        }
+                    }
+                });
+            });
+    }
+
+    showLatest() {
+        this.showLatestMeasurements();
+        this.showLatestPhoto();
+    }
+
     plot() {
         // data is an array to objects.
         // transposed is {"test:A":{"datetimes":["2020-12-12T10:46:16.358734"],"values":[100]}}"
         // note plurals...
         const transposed = this.data.reduce((accumulator, currentValue) => {
             if (accumulator[currentValue.sensor] === undefined) {
-                accumulator[currentValue.sensor] = {'datetimes': [], 'values': []}}
+                accumulator[currentValue.sensor] = {'datetimes': [], 'values': []}
+            }
             accumulator[currentValue.sensor].datetimes.push(currentValue.datetime);
             accumulator[currentValue.sensor].values.push(currentValue.value);
             return accumulator
-            }, {});
+        }, {});
 
         // const sensorLines = {"test:A": {color: '#ff7f0e'},
         //                     // old.
@@ -129,40 +220,40 @@ class Measurements {
         // };
         // {color: '#ff7f0e', dash: 'dashdot'}
         const traces = Object.entries(transposed)
-                             .map(([sensor, {datetimes, values}], i) => ({
-                                                                            x: datetimes,
-                                                                            y: values,
-                                                                            name: sensor,
-                                                                            type: 'scatter',
-                                                                            line: this.getLineDetails(sensor),
-                                                                            mode: 'lines'
-                                                                        })
-                             );
+            .map(([sensor, {datetimes, values}], i) => ({
+                    x: datetimes,
+                    y: values,
+                    name: sensor,
+                    type: 'scatter',
+                    line: this.getLineDetails(sensor),
+                    mode: 'lines'
+                })
+            );
 
         window.traces = traces;
 
 
-var layout = {
-  title: 'Measurements',
-  xaxis: {domain: [0.15, 0.7]},
-  yaxis: {title: 'Unit A', range: [0,100], dtick: 5},
-  // yaxis2: {
-  //   title: 'Humidity [%]',
-  //   overlaying: 'y',
-  //   side: 'right',
-  //   range: [0,100], dtick: 100/25
-  // },
-  // yaxis3: {
-  //   title: 'Amount [ppm]',
-  //   overlaying: 'y',
-  //   side: 'right',
-  //   range: [0,10000], dtick: 10000/25,
-  //   anchor: "free",
-  //   overlaying: "y",
-  //   position: 0.85
-  // },
-  // shapes: {{ shapes|safe}}
-};
+        var layout = {
+            title: 'Measurements',
+            //xaxis: {domain: [0.15, 0.7]},
+            yaxis: {title: '1-100 unit', range: [0, 100], dtick: 5},
+            // yaxis2: {
+            //   title: 'Humidity [%]',
+            //   overlaying: 'y',
+            //   side: 'right',
+            //   range: [0,100], dtick: 100/25
+            // },
+            // yaxis3: {
+            //   title: 'Amount [ppm]',
+            //   overlaying: 'y',
+            //   side: 'right',
+            //   range: [0,10000], dtick: 10000/25,
+            //   anchor: "free",
+            //   overlaying: "y",
+            //   position: 0.85
+            // },
+            // shapes: {{ shapes|safe}}
+        };
 
         Plotly.newPlot('graph', traces, layout);
 

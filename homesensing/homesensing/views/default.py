@@ -4,12 +4,11 @@ from ..models import Measurement, Photo, Details
 from sqlalchemy.exc import DBAPIError
 import pyramid.httpexceptions as exc
 import datetime as dt
-import os
+import os, re, shutil
 import logging
+import uuid
 
 log = logging.getLogger(__name__)
-
-from .. import models
 
 @view_defaults(route_name='home')
 class DBViews:
@@ -47,6 +46,8 @@ class DBViews:
         self.authorise()
         # typology == 'photo':
         path = self.save_photo()
+        if path is None:
+            raise exc.HTTPBadRequest('The file did not save.')
         entry = Photo(datetime=self.get_time('datetime'),
                       sensor=self.get_value('sensor', str),
                       path=path)
@@ -54,6 +55,21 @@ class DBViews:
         msg = f'Added photo by {entry.sensor} at {entry.datetime} as {entry.path}'
         log.info(msg)
         return {'status': 'success'}
+
+    def save_photo(self):
+        sensor = re.sub('[^\w\.\_\-]', '_', self.get_value('sensor', str))
+        extension = self.get_value('extension', str).replace('.','')
+        parent = os.path.split(__file__)[0] # views
+        root = os.path.split(parent)[0]
+        folder = os.path.join(root, 'static/photos', sensor)
+        if not os.path.exists(folder):
+            log.info(f'making folder {folder}')
+            os.mkdir(folder)
+        filename = str(uuid.uuid4())+'.' + extension
+        with open(os.path.join(folder, filename), 'wb') as w:
+            i = self.request.POST['photo'].file
+            shutil.copyfileobj(i, w)
+        return os.path.join('static','photos', sensor, filename)
 
     @view_config(route_name='define', renderer='json')
     def define(self):
@@ -76,9 +92,6 @@ class DBViews:
         log.info(msg)
         return {'status': 'success'}
 
-    def save_photo(self):
-        pass
-
     @view_config(route_name='read', renderer='json')
     def read(self):
         if 'delta' in self.request.params:
@@ -98,7 +111,7 @@ class DBViews:
             query_search.filter(Measurement.sensor == sensor)
         else:
             sensor = 'all'
-        ## get data
+        # === get data
         results = []
         sensors = set()
         for measurement in query_search.all():
@@ -106,7 +119,7 @@ class DBViews:
                             'sensor': measurement.sensor,
                             'value': measurement.value})
             sensors.add(measurement.sensor)
-        ## sensor details
+        # === sensor details
         query_search = self.request \
             .dbsession \
             .query(Details)
@@ -114,13 +127,21 @@ class DBViews:
             query_search = query_search.filter(Details.sensor.in_(list(sensors)))
         row2dict = lambda r: {c.name: str(getattr(r, c.name)) for c in r.__table__.columns}
         sensor_details = {row.sensor: row2dict(row) for row in query_search.all()}
-        ## return
+        # === Photos
+        query_search = self.request \
+            .dbsession \
+            .query(Photo) \
+            .filter(Measurement.datetime > start) \
+            .filter(Measurement.datetime < stop)
+        photos = [row2dict(row) for row in query_search.all()]
+        # === return
         log.info(f'serving sensor={sensor} data')
         return {'data': results,
                 'start': start.isoformat(),
                 'stop': stop.isoformat(),
                 'sensor': sensor,
-                'sensor_details': sensor_details
+                'sensor_details': sensor_details,
+                'photos': photos
                 }
 
     # ========= dependents  =============================================
