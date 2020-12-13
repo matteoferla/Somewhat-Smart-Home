@@ -5,7 +5,7 @@ from sqlalchemy.exc import DBAPIError
 import pyramid.httpexceptions as exc
 import datetime as dt
 import os, re, shutil
-import logging
+import logging, time
 import uuid
 
 log = logging.getLogger(__name__)
@@ -143,6 +143,17 @@ class DBViews:
                 'sensor_details': sensor_details,
                 'photos': photos
                 }
+
+    @view_config(route_name='status', renderer='json')
+    def status(self):
+        if 'key' not in self.request.params:
+            return {'status': 'No key given'}
+        elif self.request.params['key'] != os.environ['SECRETCODE']:
+            time.sleep(30)
+            return {'status': 'Wrong key given'}
+        else:
+            return {'status': 'Correct key given'}
+
 
     # ========= dependents  =============================================
 

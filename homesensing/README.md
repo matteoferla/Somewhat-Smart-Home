@@ -47,6 +47,26 @@ But the key part is that `/record` route requires the following:
     'datetime': dt.datetime.now().isoformat(), # optional.
     'sensor': '👾👾👾',
     'value': '👾👾👾'}
+    
+## System daemon
+
+    sudo nano /etc/systemd/system/somewhatsmart.service
+
+Adding:
+
+    [Unit]
+    Description=Run Somewhat smart
+    After=network.target
+    
+    [Service]
+    User=pi
+    Environment=SECRETCODE='👾👾👾'
+    WorkingDirectory=/home/pi/Somewhat-Smart-Home/homesensing
+    ExecStart=python3 app.py
+    Restart=always
+    
+    [Install]
+    WantedBy=multi-user.target
 
 ## Text from cookiecutter
 
