@@ -1,6 +1,6 @@
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
-from ..models import Measurement, FauxDateMeasurement, Photo, Details
+from ..models import Measurement, Photo, Details, Sunpath
 from sqlalchemy.exc import DBAPIError
 import pyramid.httpexceptions as exc
 import datetime as dt

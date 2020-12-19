@@ -2,11 +2,13 @@
 
 $(document).ready(() => {
     window.measurements = new Measurements();
+    window.measurements.getNights(7);
     window.measurements.getData(7);
     window.measurements.getPhotos(7);
 
     $('#changeRange button').click((event) => {
             const delta = parseInt($(event.target).data('delta'));
+            window.measurements.getNights(delta);
             window.measurements.getData(delta);
             window.measurements.getPhotos(delta);
         }
@@ -14,6 +16,7 @@ $(document).ready(() => {
 
     $('#scrollDelta').change((event) => {
         const delta = parseInt($(event.target).val());
+        window.measurements.getNights(delta);
         window.measurements.getData(delta);
         window.measurements.getPhotos(delta);
     });
@@ -28,6 +31,8 @@ class Measurements {
         this.latest = {};
         this.sensorDetails = {};
         this.photos = [];
+        this.nights = [];
+        this.twilights = [];
     }
 
     getPhotos(delta) {
@@ -64,6 +69,13 @@ class Measurements {
             this.applyData();
         });
     };
+
+    getNights(delta) {
+        jQuery.get(`/night?delta=${delta}`, {}, ({nights, twilights}) => {
+            this.nights = nights;
+            this.twilights = twilights;
+        });
+    }
 
     applyData() {
         // called by .getData.
@@ -244,6 +256,33 @@ class Measurements {
 
         window.traces = traces;
 
+        const nightshapes = this.nights.map(([dusk, dawn]) => {return {'type': 'rect', //pycharm screams if {{ }} form
+                                                                  'xref': 'x',
+                                                                  'yref': 'paper',
+                                                                  'x0': dusk,
+                                                                  'y0': 0,
+                                                                  'x1': dawn,
+                                                                  'y1': 1,
+                                                                  'fillcolor': '#191970',  // midnightblue
+                                                                  'opacity': 0.4,
+                                                                  'line': {'width': 0},
+                                                                  'layer': 'below'
+                                                                  }});
+
+        const twishapes = this.twilights.map(([a, b]) => {return {'type': 'rect',
+                                                              'xref': 'x',
+                                                              'yref': 'paper',
+                                                              'x0': a,
+                                                              'y0': 0,
+                                                              'x1': b,
+                                                              'y1': 1,
+                                                              'fillcolor': '#6495ed',  // cornflowerblue
+                                                              'opacity': 0.4,
+                                                              'line': {'width': 0},
+                                                              'layer': 'below'
+                                                              }});
+
+        const shapes = [...nightshapes, ...twishapes];
 
         var layout = {
             title: 'Measurements',
@@ -264,7 +303,7 @@ class Measurements {
             //   overlaying: "y",
             //   position: 0.85
             // },
-            // shapes: {{ shapes|safe}}
+            shapes: shapes
         };
 
         Plotly.newPlot('graph', traces, layout);

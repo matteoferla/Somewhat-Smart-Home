@@ -7,7 +7,9 @@ import os, argparse
 # check and fill missing environment variables.
 # ones with None are optional.
 environmental = dict(SECRETCODE='ERROR',
-                     SLACK_WEBHOOK=None
+                     SLACK_WEBHOOK=None,
+                     LOCAL_LATITUDE=51.746000, # Oxford
+                     LOCAL_LONGITUTE=-1.258200 # Oxford
                      )
 
 for ev in environmental:
@@ -17,7 +19,7 @@ for ev in environmental:
         print(f'Environment variable {ev}: skipping')
     else:
         print(f'Environment variable {ev}: defaulting to {environmental[ev]}')
-        os.environ[ev] = environmental[ev]
+        os.environ[ev] = str(environmental[ev])
 
 # ======================================================================================================================
 

@@ -2,15 +2,6 @@
 # 192.168.0.69
 # "companion_pi"
 
-# from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.schedulers.blocking import BlockingScheduler
-from functools import partial
-from datetime import datetime, timedelta
-import digitalio
-import board
-import time
-
-
 """
 
 
@@ -31,6 +22,14 @@ Restart=always
 WantedBy=multi-user.target
 """
 
+# from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
+from functools import partial
+from datetime import datetime, timedelta
+import digitalio
+import board
+import time
+
 # =============================================================================================================================
 
 scheduler = BlockingScheduler()
@@ -40,26 +39,46 @@ scheduler = BlockingScheduler()
 
 def binmaster(pin, weekday=3):
     while datetime.now().weekday() == weekday:
-        with digitalio.DigitalInOut(pin) as led:
-            led.direction = digitalio.Direction.OUTPUT
-            led.value = True
-            time.sleep(0.5)
-            led.value = False
-            time.sleep(0.5)
+        binflasher(pin)
 
 
-bluebinmaster = partial(binmaster, pin=board.D24)
-greenbinmaster = partial(binmaster, pin=board.D23)
+def binflasher(pin, tempo=0.5):
+    with digitalio.DigitalInOut(pin) as led:
+        led.direction = digitalio.Direction.OUTPUT
+        led.value = True
+        time.sleep(tempo)
+        led.value = False
+        time.sleep(tempo)
+
+
+bluepin = board.D24
+greenpin = board.D23
+for pin in (bluepin, greenpin):  # check they dont raise errors.
+    with digitalio.DigitalInOut(bluepin) as led:
+        led.direction = digitalio.Direction.OUTPUT
+        led.value = False
+
+bluebinmaster = partial(binmaster, pin=bluepin)
+greenbinmaster = partial(binmaster, pin=greenpin)
 
 # next green
-greenday = datetime.fromisoformat('2020-12-03 16:30:00')
+greenday = datetime.fromisoformat('2020-12-17 16:30:00')
 while greenday < datetime.now():
-    greenday += timedelta(days=7)
+    greenday += timedelta(days=14)
 
 # next green
-blueday = datetime.fromisoformat('2020-12-10 16:30:00')
+blueday = datetime.fromisoformat('2020-12-24 16:30:00')
 while blueday < datetime.now():
-    blueday += timedelta(days=7)
+    blueday += timedelta(days=14)
+
+print(f'Greenday: {greenday}')
+print(f'Blueday: {blueday}')
+
+for i in range(10):
+    if greenday < blueday:
+        binflasher(greenpin, 2)
+    else:
+        binflasher(bluepin, 2)
 
 # -----------------------------------------------------------------------------------------------------------------------------
 
@@ -158,7 +177,7 @@ class HomieAPI:
 
 # -----------------------------------------------------------------------------------------------------------------------------
 
-homie = HomieAPI(base_url='http://192.168.0.69:8000', key='👾👾👾👾👾')
+homie = HomieAPI(base_url='http://192.168.0.75:8000', key='properbaltic')
 
 # =============================================================================================================================
 
@@ -167,10 +186,11 @@ from datetime import datetime
 import sqlalchemy as db
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import Adafruit_DHT
+# import Adafruit_DHT
+import adafruit_dht
 from collections import namedtuple
 
-DHT = namedtuple('DHT', ['humidity', 'temperature'])
+# DHT = namedtuple('DHT', ['humidity', 'temperature'])
 
 Base = declarative_base()
 
@@ -197,9 +217,9 @@ Base.metadata.create_all(engine)
 
 # -----------------------------------------------------------------------------------------------------------------------------
 
-
 def sense():
-    dht = DHT(*Adafruit_DHT.read(22, 4))
+    # dht = DHT(*Adafruit_DHT.read(22, 4))
+    dht = adafruit_dht.DHT22(board.D4)
     if dht.temperature is None:
         return sense()
     datum = Measurement(datetime=datetime.now(),
@@ -210,7 +230,12 @@ def sense():
     session.commit()
     homie.record(sensor='livingroom:temperature', value=datum.temperature, datetime=datum.datetime)
     homie.record(sensor='livingroom:humidity', value=datum.humidity, datetime=datum.datetime)
+    return datum
 
+
+# -----------------------------------------------------------------------------------------------------------------------------
+
+scheduler.add_job(func=sense, trigger="interval", hours=1)
 
 # =============================================================================================================================
 

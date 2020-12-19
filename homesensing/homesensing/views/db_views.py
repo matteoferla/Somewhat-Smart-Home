@@ -1,6 +1,6 @@
 from pyramid.view import view_config, view_defaults
 from pyramid.response import Response
-from ..models import Measurement, Photo, Details
+from ..models import Measurement, Photo, Details, Sunpath
 from sqlalchemy.exc import DBAPIError
 import pyramid.httpexceptions as exc
 import datetime as dt
@@ -10,6 +10,7 @@ import uuid
 from .authenticate import Authenticator
 
 log = logging.getLogger(__name__)
+
 
 class DBViews:
     time_debug = False
@@ -28,6 +29,22 @@ class DBViews:
 
     # === views
 
+    @view_config(route_name='status', renderer='json')
+    def status(self):
+        """
+        Is the key correct?
+
+        :return:
+        """
+        authenticator = Authenticator(self.request)
+        if not authenticator.has_key():
+            return {'status': 'No key given'}
+        elif not authenticator.is_valid():
+            time.sleep(30)
+            return {'status': 'Wrong key given', 'time_taken': self.time_taken}
+        else:
+            return {'status': 'Correct key given', 'time_taken': self.time_taken}
+
     @view_config(route_name='record', renderer='json')
     def record(self):
         """
@@ -37,8 +54,8 @@ class DBViews:
         """
         self.authorise()
         entry = Measurement(datetime=self.get_time('datetime'),
-                        sensor=self.get_value('sensor', str),
-                        value=self.get_value('value', float))
+                            sensor=self.get_value('sensor', str),
+                            value=self.get_value('value', float))
         self.request.dbsession.add(entry)  # transaction manager built in. No commit.
         msg = f'Added recording by {entry.sensor} of {entry.value} at {entry.datetime}'
         log.info(msg)
@@ -64,21 +81,6 @@ class DBViews:
         log.info(msg)
         return {'status': 'success', 'time_taken': self.time_taken}
 
-    def save_photo(self):
-        sensor = re.sub('[^\w\.\_\-]', '_', self.get_value('sensor', str))
-        extension = self.get_value('extension', str).replace('.','')
-        parent = os.path.split(__file__)[0] # views
-        root = os.path.split(parent)[0]
-        folder = os.path.join(root, 'static/photos', sensor)
-        if not os.path.exists(folder):
-            log.info(f'making folder {folder}')
-            os.mkdir(folder)
-        filename = str(uuid.uuid4())+'.' + extension
-        with open(os.path.join(folder, filename), 'wb') as w:
-            i = self.request.POST['photo'].file
-            shutil.copyfileobj(i, w)
-        return os.path.join('static','photos', sensor, filename)
-
     @view_config(route_name='define', renderer='json')
     def define(self):
         """
@@ -100,16 +102,6 @@ class DBViews:
         log.info(msg)
         return {'status': 'success', 'time_taken': self.time_taken}
 
-    def get_boundaries(self):
-        if 'delta' in self.request.params:
-            # delta will be used only if no 'stop'
-            delta = self.get_value('delta', float)
-        else:
-            delta = 5
-        start = self.get_time('start', delta=delta)
-        stop = self.get_time('stop')
-        return start, stop
-
     @view_config(route_name='read', renderer='json')
     def read(self):
         start, stop = self.get_boundaries()
@@ -122,7 +114,7 @@ class DBViews:
         if self.time_debug:
             log.info(f'Ori-query Time taken: {self.time_taken}')
         if 'stop' in self.request.params:
-            query_search =  query_search.filter(Measurement.datetime < stop)
+            query_search = query_search.filter(Measurement.datetime < stop)
         if 'sensor' in self.request.params:
             sensor = self.get_value('sensor', str)
             query_search.filter(Measurement.sensor == sensor)
@@ -179,26 +171,32 @@ class DBViews:
                 'time_taken': self.time_taken
                 }
 
-
-
-    @view_config(route_name='status', renderer='json')
-    def status(self):
-        """
-        Is the key correct?
-
-        :return:
-        """
-        authenticator = Authenticator(self.request)
-        if not authenticator.has_key():
-            return {'status': 'No key given'}
-        elif not authenticator.is_valid():
-            time.sleep(30)
-            return {'status': 'Wrong key given', 'time_taken': self.time_taken}
-        else:
-            return {'status': 'Correct key given', 'time_taken': self.time_taken}
-
+    @view_config(route_name='night', renderer='json')
+    def night(self):
+        start, stop = self.get_boundaries()
+        # get all dates (not datetimes) between.
+        dates = []
+        start = start.date()
+        stop = stop.date()
+        new = start
+        while new <= stop:
+            dates.append(new)
+            new += dt.timedelta(days=1)
+        # get data
+        nights, twilights = self.get_nighttime(dates)
+        return {'nights': nights, 'twilights': twilights}
 
     # ========= dependents  =============================================
+
+    def get_boundaries(self):
+        if 'delta' in self.request.params:
+            # delta will be used only if no 'stop'
+            delta = self.get_value('delta', float)
+        else:
+            delta = 5
+        start = self.get_time('start', delta=delta)
+        stop = self.get_time('stop')
+        return start, stop
 
     def get_value(self, key: str, value_type: type = str, default=None):
         if key in self.request.params:
@@ -235,8 +233,69 @@ class DBViews:
         """
         return dt.datetime.combine(datetime.date(), dt.time.min)
 
+    def save_photo(self):
+        sensor = re.sub('[^\w\.\_\-]', '_', self.get_value('sensor', str))
+        extension = self.get_value('extension', str).replace('.', '')
+        parent = os.path.split(__file__)[0]  # views
+        root = os.path.split(parent)[0]
+        folder = os.path.join(root, 'static/photos', sensor)
+        if not os.path.exists(folder):
+            log.info(f'making folder {folder}')
+            os.mkdir(folder)
+        filename = str(uuid.uuid4()) + '.' + extension
+        with open(os.path.join(folder, filename), 'wb') as w:
+            i = self.request.POST['photo'].file
+            shutil.copyfileobj(i, w)
+        return os.path.join('static', 'photos', sensor, filename)
+
     def authorise(self):
         Authenticator(self.request).assert_valid()
 
     def row2dict(self, r):
         return {c.name: str(getattr(r, c.name)) for c in r.__table__.columns}
+
+
+    def fetch_sunpath(self, date: dt.date):
+        standard = '%Y-%m-%dT%H:%M:%S+00:00'
+        lat = float(os.environ['LOCAL_LATITUDE']) #51.746000
+        lon = float(os.environ['LOCAL_LONGITUTE']) #-1.258200
+        url = f'https://api.sunrise-sunset.org/json?lat={lat}&lng={lon}'
+        data = self.requests.get(f'{url}&date={date.year}-{date.month}-{date.day}&formatted=0').json()['results']
+        sun = Sunpath(date=date,
+                    dawn=dt.datetime.strptime(data['civil_twilight_begin'], standard),
+                    sunrise=dt.datetime.strptime(data['sunrise'], standard),
+                    sunset=dt.datetime.strptime(data['sunset'], standard),
+                    dusk=dt.datetime.strptime(data['civil_twilight_end'], standard)
+                    )
+        self.request.dbsession.add(sun)
+
+    def get_nighttime(self, dates):
+        # dates is a list of dates, not datetimes
+        if len(dates):
+            exc.HTTPBadRequest('No days')
+        for date in dates:
+            if self.request.dbsession.query(Sunpath).filter(Sunpath.date == date).first() is None:
+                self.fetch_sunpath(date)
+        previous = None
+        nights = []
+        twilights = []
+        day = None
+        for day in self.request.dbsession.query(Sunpath).filter(Sunpath.date >= min(dates)) \
+                .filter(Sunpath.date <= max(dates)) \
+                .order_by(Sunpath.date).all():
+            if previous is None:
+                date = day.date
+                previous = datetime.combine(date, dtime.min)
+            nights.append([previous.strftime(standard), day.dawn.strftime(standard)])
+            previous = day.dusk
+            twilights.append([day.dawn.strftime(standard), day.sunrise.strftime(standard)])
+            twilights.append([day.sunset.strftime(standard), day.dusk.strftime(standard)])
+        if not day is None:
+            d = day.date
+            ender = datetime.combine(d, dtime.max)
+            nights.append([previous.strftime(standard), ender.strftime(standard)])
+        else:
+            log.critical('NO DATA! Is this the first run?')
+        return nights, twilights
+
+

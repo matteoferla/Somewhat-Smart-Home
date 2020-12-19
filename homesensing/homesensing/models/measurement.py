@@ -10,12 +10,12 @@ class Measurement(Base): # db.Model
     sensor = db.Column(db.Text)
     value = db.Column(db.Float, nullable=False)
 
-class FauxDateMeasurement: #(Measurement):
-    """
-    The parsing of datetime is too slow. text for the win. This is the original test.
-    """
-    __tablename__ = 'measurements'
-    __table_args__ = {'extend_existing': True}
-    datetime = db.Column(db.Text)
+# class FauxDateMeasurement: #(Measurement):
+#     """
+#     The parsing of datetime is too slow. text for the win. This is the original test.
+#     """
+#     __tablename__ = 'measurements'
+#     __table_args__ = {'extend_existing': True}
+#     datetime = db.Column(db.Text)
 
 #db.Index('my_index', Measurement.name, unique=True, mysql_length=255)
