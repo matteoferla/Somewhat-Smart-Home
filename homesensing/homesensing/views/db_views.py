@@ -5,7 +5,7 @@ from sqlalchemy.exc import DBAPIError
 import pyramid.httpexceptions as exc
 import datetime as dt
 import os, re, shutil, time
-import logging, time
+import logging, time, requests
 import uuid
 from .authenticate import Authenticator
 
@@ -254,13 +254,12 @@ class DBViews:
     def row2dict(self, r):
         return {c.name: str(getattr(r, c.name)) for c in r.__table__.columns}
 
-
     def fetch_sunpath(self, date: dt.date):
         standard = '%Y-%m-%dT%H:%M:%S+00:00'
         lat = float(os.environ['LOCAL_LATITUDE']) #51.746000
         lon = float(os.environ['LOCAL_LONGITUTE']) #-1.258200
         url = f'https://api.sunrise-sunset.org/json?lat={lat}&lng={lon}'
-        data = self.requests.get(f'{url}&date={date.year}-{date.month}-{date.day}&formatted=0').json()['results']
+        data = requests.get(f'{url}&date={date.year}-{date.month}-{date.day}&formatted=0').json()['results']
         sun = Sunpath(date=date,
                     dawn=dt.datetime.strptime(data['civil_twilight_begin'], standard),
                     sunrise=dt.datetime.strptime(data['sunrise'], standard),

@@ -5,10 +5,10 @@ import zope.sqlalchemy
 
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
+from .sunpath import Sunpath
 from .measurement import Measurement  # flake8: noqa
 from .details import Details
 from .photo import Photo
-from .sunpath import Sunpath
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
