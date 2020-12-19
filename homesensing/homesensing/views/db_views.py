@@ -279,19 +279,20 @@ class DBViews:
         nights = []
         twilights = []
         day = None
+        standard = '%Y-%m-%dT%H:%M:%S+00:00'
         for day in self.request.dbsession.query(Sunpath).filter(Sunpath.date >= min(dates)) \
                 .filter(Sunpath.date <= max(dates)) \
                 .order_by(Sunpath.date).all():
             if previous is None:
                 date = day.date
-                previous = datetime.combine(date, dtime.min)
+                previous = dt.datetime.combine(date, dt.time.min)
             nights.append([previous.strftime(standard), day.dawn.strftime(standard)])
             previous = day.dusk
             twilights.append([day.dawn.strftime(standard), day.sunrise.strftime(standard)])
             twilights.append([day.sunset.strftime(standard), day.dusk.strftime(standard)])
         if not day is None:
             d = day.date
-            ender = datetime.combine(d, dtime.max)
+            ender = dt.datetime.combine(d, dt.time.max)
             nights.append([previous.strftime(standard), ender.strftime(standard)])
         else:
             log.critical('NO DATA! Is this the first run?')
