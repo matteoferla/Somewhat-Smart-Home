@@ -1,10 +1,10 @@
-# Code from thermometer pi with bindicator in living room
-# 192.168.0.69
-# "companion_pi"
+
 
 """
 
-
+Code from homeserver. For now only CPU temp
+# 192.168.0.84
+# "homeserver"
 
 $ sudo nano /etc/systemd/system/scheduled.service
 
@@ -24,68 +24,10 @@ WantedBy=multi-user.target
 
 # from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.blocking import BlockingScheduler
-from functools import partial
-from datetime import datetime, timedelta
-import digitalio
-import board
-import time
 
-# =============================================================================================================================
 
 scheduler = BlockingScheduler()
 
-
-# =============================================================================================================================
-
-def binmaster(pin, weekday=3):
-    while datetime.now().weekday() == weekday:
-        binflasher(pin)
-
-
-def binflasher(pin, tempo=0.5):
-    with digitalio.DigitalInOut(pin) as led:
-        led.direction = digitalio.Direction.OUTPUT
-        led.value = True
-        time.sleep(tempo)
-        led.value = False
-        time.sleep(tempo)
-
-
-bluepin = board.D24
-greenpin = board.D23
-for pin in (bluepin, greenpin):  # check they dont raise errors.
-    with digitalio.DigitalInOut(bluepin) as led:
-        led.direction = digitalio.Direction.OUTPUT
-        led.value = False
-
-bluebinmaster = partial(binmaster, pin=bluepin)
-greenbinmaster = partial(binmaster, pin=greenpin)
-
-# next green
-greenday = datetime.fromisoformat('2020-12-17 16:30:00')
-while greenday < datetime.now():
-    greenday += timedelta(days=14)
-
-# next green
-blueday = datetime.fromisoformat('2020-12-24 16:30:00')
-while blueday < datetime.now():
-    blueday += timedelta(days=14)
-
-print(f'Greenday: {greenday}')
-print(f'Blueday: {blueday}')
-
-for i in range(10):
-    if greenday < blueday:
-        binflasher(greenpin, 2)
-    else:
-        binflasher(bluepin, 2)
-
-# -----------------------------------------------------------------------------------------------------------------------------
-
-scheduler.add_job(greenbinmaster, 'interval', weeks=2, start_date=greenday.isoformat())
-scheduler.add_job(bluebinmaster, 'interval', weeks=2, start_date=blueday.isoformat())
-
-# =============================================================================================================================
 
 import requests, os
 import datetime as dt
@@ -181,71 +123,20 @@ homie = HomieAPI(base_url='http://192.168.0.75:8000', key='properbaltic')
 
 # =============================================================================================================================
 
-# https://github.com/matteoferla/Raspberry-Pi-irrigator/blob/master/models.py
+
+
+
+# -----------------------------------------------------------------------------------------------------------------------------
+
 from datetime import datetime
-import sqlalchemy as db
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-# import Adafruit_DHT
-import adafruit_dht
-import time
-from collections import namedtuple
-
-# DHT = namedtuple('DHT', ['humidity', 'temperature'])
-
-Base = declarative_base()
-
-
-class Measurement(Base):
-    """
-    The table containing the measurements.
-    """
-    __tablename__ = 'measurements'
-    id = db.Column(db.Integer, primary_key=True)
-    datetime = db.Column(db.DateTime(timezone=True), unique=True, nullable=False)
-    temperature = db.Column(db.Float, unique=False, nullable=False)
-    humidity = db.Column(db.Float, unique=False, nullable=False)
-
-
-# -----------------------------------------------------------------------------------------------------------------------------
-
-
-engine = db.create_engine('sqlite://///home/pi/thermo/temperature.sqlite')
-Session = sessionmaker()
-session = Session(bind=engine)
-Base.metadata.create_all(engine)
-
-
-# -----------------------------------------------------------------------------------------------------------------------------
-
-def sense():
-    # dht = DHT(*Adafruit_DHT.read(22, 4))
-    dht = adafruit_dht.DHT22(board.D4, use_pulseio=False)
-    time.sleep(0.1)
-    if dht.temperature is None:
-        return sense()
-    datum = Measurement(datetime=datetime.now(),
-                        temperature=dht.temperature,
-                        humidity=dht.humidity)
-
-    session.add(datum)
-    session.commit()
-    homie.record(sensor='livingroom:temperature', value=datum.temperature, datetime=datum.datetime)
-    homie.record(sensor='livingroom:humidity', value=datum.humidity, datetime=datum.datetime)
-    return datum
-
 
 def core():
     with open('/sys/class/thermal/thermal_zone0/temp') as core:
         v = int(core.read().strip()) / 1e3
-        homie.record(sensor='livingroom:CPU_temperature', value=v, datetime=datetime.now())
+        homie.record(sensor='homeserver:CPU_temperature', value=v, datetime=datetime.now())
         return v
 
-
 # -----------------------------------------------------------------------------------------------------------------------------
-
-print(sense())
-scheduler.add_job(func=sense, trigger="interval", hours=1)
 
 print(core())
 scheduler.add_job(func=core, trigger="interval", hours=1)

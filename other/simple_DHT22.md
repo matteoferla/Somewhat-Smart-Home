@@ -1,6 +1,7 @@
 ## DHT22 server
 
 This is just a simple Flask server that logs and servers a DHT22.
+It uses the old DHT library.
 
 ## DB
 

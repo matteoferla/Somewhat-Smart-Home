@@ -25,7 +25,8 @@ Using system python3, namely `/usr/bin/python3` as opposed to berryconda:
     sudo apt-get -y install python3-pandas
     sudo apt-get -y  install python3-dev
     sudo apt-get -y  install python3-pip
-    /usr/bin/pip3 install jupyter RPi.GPIO waitress flask Flask-Ask Flask-SQLAlchemy beautifulsoup4 Pillow picamera
+    sudo apt-get -y install python3-sqlalchemy
+    pip3 install jupyter RPi.GPIO waitress flask Flask-Ask Flask-SQLAlchemy beautifulsoup4 Pillow picamera adafruit-circuitpython-dht adafruit-blinka
 
 Git:
 
@@ -83,6 +84,9 @@ Assuming jupyter is in `/home/pi/.local/bin/jupyter` and then:
     sudo systemctl status jupyter
     sudo systemctl enable jupyter
     
+If stuff does not work (generally filename wrong etc.)
+
+    sudo journalctl -u jupyter
 ## Pins
 
 Show in a Jupyter notebook cell what the pins are:
