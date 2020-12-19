@@ -16,7 +16,16 @@
     <div class="row">
         <div class="col-12">
             <h1>Latest values</h1>
-            <div id="latest" class="card-columns"></div>
+            <div id="latest" class="card-columns">
+                 <div class="card">
+                     <div class="card-header">
+                         <i class="fas fa-cog fa-spin"></i> Data loading...
+                     </div>
+                    <div class="card-body">
+                        This card should have disappeared after a few seconds.
+                    </div>
+                </div>
+            </div>
 
             <h1>Graph</h1>
             <div id="graph" style="width:70vw;"></div>
@@ -32,6 +41,14 @@
 
             <h1>Photos</h1>
             <div class="card-columns" id="photocards">
+                 <div class="card">
+                     <div class="card-header">
+                         <i class="fas fa-cog fa-spin"></i> Data loading...
+                     </div>
+                    <div class="card-body">
+                        This card should have disappeared after a few seconds.
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -3,16 +3,19 @@
 $(document).ready(() => {
     window.measurements = new Measurements();
     window.measurements.getData(7);
+    window.measurements.getPhotos(7);
 
     $('#changeRange button').click((event) => {
             const delta = parseInt($(event.target).data('delta'));
             window.measurements.getData(delta);
+            window.measurements.getPhotos(delta);
         }
     );
 
     $('#scrollDelta').change((event) => {
         const delta = parseInt($(event.target).val());
         window.measurements.getData(delta);
+        window.measurements.getPhotos(delta);
     });
 
 });
@@ -27,19 +30,8 @@ class Measurements {
         this.photos = [];
     }
 
-    getData(delta) {
-        jQuery.get(`/read?delta=${delta}`, {}, ({data, sensor, start, stop, sensor_details, photos}) => {
-            //returned is {"data": [{"datetime": "2020-12-12T10:46:16.358734", "sensor": "test:A", "value": 100.0}],
-            //             "start": "2020-12-07T10:46:27.094380",
-            //             "stop": "2020-12-12T10:46:27.094407",
-            //             "sensor": "all"}
-            // and sensor_details:
-            // {"test:A": {'id': '1', 'sensor': 'test:A', 'location': 'localhosted', 'model': 'None', 'unit': '°C',
-            //                  'graph_color': '#c0c0c0', 'dashed': 'True', 'axis': 'hundred'},
-            //
-            this.queryInfo = {start: start, stop: stop, sensor: sensor};
-            this.sensorDetails = sensor_details;
-            this.data = data.sort((a, b) => Date.parse(a.datetime) > Date.parse(b.datetime) ? 1 : -1);
+    getPhotos(delta) {
+        jQuery.get(`/show?delta=${delta}`, {}, ({start, stop, photos}) => {
             this.photos = photos.sort((a, b) => Date.parse(a.datetime) < Date.parse(b.datetime) ? 1 : -1)
                                 .reduce((accumulator, currentValue) => {
                                         if (currentValue.path === 'None') {}
@@ -51,6 +43,24 @@ class Measurements {
 
                                         return accumulator
                                     }, {});
+
+            this.showLatestPhoto();
+        });
+    }
+
+    getData(delta) {
+        jQuery.get(`/read?delta=${delta}`, {}, ({data, sensor, start, stop, sensor_details}) => {
+            //returned is {"data": [{"datetime": "2020-12-12T10:46:16.358734", "sensor": "test:A", "value": 100.0}],
+            //             "start": "2020-12-07T10:46:27.094380",
+            //             "stop": "2020-12-12T10:46:27.094407",
+            //             "sensor": "all"}
+            // and sensor_details:
+            // {"test:A": {'id': '1', 'sensor': 'test:A', 'location': 'localhosted', 'model': 'None', 'unit': '°C',
+            //                  'graph_color': '#c0c0c0', 'dashed': 'True', 'axis': 'hundred'},
+            //
+            this.queryInfo = {start: start, stop: stop, sensor: sensor};
+            this.sensorDetails = sensor_details;
+            this.data = data.sort((a, b) => Date.parse(a.datetime) > Date.parse(b.datetime) ? 1 : -1);
             this.applyData();
         });
     };
@@ -63,7 +73,9 @@ class Measurements {
                 accumulator[currentValue.sensor] = currentValue.value;
                 return accumulator
             }, {});
-            this.showLatest();
+            this.showLatestMeasurements();
+        } else {
+            //there is nothing to show :(
         }
         this.plot();
     }

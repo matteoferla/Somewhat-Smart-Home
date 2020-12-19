@@ -5,7 +5,7 @@ import zope.sqlalchemy
 
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
-from .measurement import Measurement  # flake8: noqa
+from .measurement import Measurement, FauxDateMeasurement  # flake8: noqa
 from .details import Details
 from .photo import Photo
 
