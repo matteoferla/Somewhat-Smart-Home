@@ -76,7 +76,7 @@ def sense_probes():
                             sensor=sensor.id)
         session.add(datum)
         homie.record(sensor='plant:temperature_probe_' + datum.sensor,
-                     value=datum.temperature,
+                     value=datum.value,
                      datetime=datum.datetime)
     session.commit()
 
@@ -88,13 +88,13 @@ scheduler.add_job(func=sense_probes, trigger="interval", hours=1)
 # ----------------------------------------------------------------------------------------------------------------------
 import adafruit_dht, board
 
-dht = adafruit_dht.DHT11(board.D4, use_pulseio=False)
+dht = adafruit_dht.DHT22(board.D17, use_pulseio=True)
+#Adafruit_DHT.read(22, 17) #An AM2306 is the same as a DHT22.
 time.sleep(0.5)
 
 def dht_sense():
-    # dht = DHT(*Adafruit_DHT.read(22, 4))
-    if dht.temperature is None:
-        return dht_sense()
+    # dht = DHT(*Adafruit_DHT.read(22, 17))
+    dht.measure()
     datum = Measurement(datetime=dt.datetime.now(),
                         value=dht.temperature,
                         sensor='temperature')

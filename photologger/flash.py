@@ -11,9 +11,9 @@ class Flash:
         pass
 
     def __enter__(self):
-        self.light = True
+        self.light.value = True
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.light = False
+        self.light.value = False
 

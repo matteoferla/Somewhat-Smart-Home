@@ -1,6 +1,7 @@
 from warnings import warn
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 from datetime import datetime
 from signal import signal, SIGINT
 from .slack import slack
@@ -13,10 +14,13 @@ log = logging.getLogger(__name__)
 class Schedule:
     lock = Lock() #stop interferring with each other.
 
-    def __init__(self, interval_minutes=10):
+    def __init__(self, interval_minutes=10, background=True):
         signal(SIGINT, self.death_handler)
         ## Scheduler
-        scheduler = BackgroundScheduler()
+        if background:
+            scheduler = BackgroundScheduler()
+        else:
+            scheduler = BlockingScheduler()
         scheduler.add_job(func=self.photo, trigger="interval", minutes=interval_minutes)
         scheduler.start()
 
