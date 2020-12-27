@@ -18,7 +18,12 @@ class Photo:
     # see also a SIGINT death safeguard.
     # it is this or the gc ...
 
-    def __init__(self, warmup: int = 5, stack=True, max_exposures: int = 20, debug=False):
+    def __init__(self,
+                 warmup: int = 5,
+                 stack=True,
+                 max_exposures: int = 20,
+                 debug=False,
+                 autosave=False):
         self.exposures = 0
         self.debug = debug
         self.stack = stack
@@ -55,7 +60,8 @@ class Photo:
         self.data = self.per_channel(self.scale, self.data)
         self.data = self.per_channel(self.histogram_stretch, self.data)
         self.image = Image.fromarray(self.data)
-        self.save()
+        if autosave:
+            self.save()
 
     @staticmethod
     def per_channel(fx, t):
