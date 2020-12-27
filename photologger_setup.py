@@ -7,7 +7,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 requires = [
     'requests',
     'picamera',
-    'PIL',
+    'pillow',
     'apscheduler',
     'flask'
 ]
