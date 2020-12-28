@@ -1,6 +1,8 @@
 from mako.template import Template
+from mako.lookup import TemplateLookup
 
-template = Template(filename='scheduled_tasks.py.mako')
+mylookup = TemplateLookup(directories=['.'])
+template = Template(filename='scheduled_tasks.py.mako', lookup=mylookup)
 
 rendered = template.render(pi_name='👾👾👾',
                           ip='👾👾👾',
@@ -12,3 +14,6 @@ rendered = template.render(pi_name='👾👾👾',
                           )
 
 print(rendered)
+
+with open('👾👾👾.py', 'w') as w:
+    w.write(rendered)
