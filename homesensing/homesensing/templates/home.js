@@ -158,7 +158,7 @@ class Measurements {
                                 <button class="btn btn-outline-success photobtn previous" data-sensor="${sensor}" data-goto="${i - 1}">                         
                                     <i class="fas fa-chevron-left"></i></div>
                                 </button>
-                                <div class="flex-fill text-center">${entry.datetime}</div>
+                                <div class="flex-fill text-center"  data-sensor="${sensor}">${entry.datetime}</div>
                                 <div class="align-self-end">
                                     <button class="btn btn-outline-success photobtn next" data-sensor="${sensor}"  data-goto="${i + 1}">                         
                                         <i class="fas fa-chevron-right"></i></div>
