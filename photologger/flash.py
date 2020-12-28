@@ -4,6 +4,10 @@ import board
 ###################################################
 #
 class Flash:
+    """
+    this should be using camera.led_pin! and flash_mode
+
+    """
     light = digitalio.DigitalInOut(board.D21)
     light.direction = digitalio.Direction.OUTPUT
 

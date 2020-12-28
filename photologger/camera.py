@@ -33,7 +33,7 @@ class Photo:
             self.__class__._camera = self.camera  # death prevention..
             self.camera.start_preview()
             time.sleep(warmup)
-            with Flash():
+            with Flash() as flash: # this should be using led_pin!
                 # while np.max(self.data) < 255 and self.exposures < 10:
                 while True:
                     self.data = np.add(self.data, np.asarray(self.capture()))
@@ -50,6 +50,12 @@ class Photo:
                     elif self.exposures == 1 and median > 100:
                         # don't stack for no reason.
                         break
+                    elif self.exposures == 1:
+                        self.camera.sensor_mode = 3
+                        # self.iso = 800
+                        self.camera.shutter_speed = self.camera.exposure_speed * int(255 / np.max(self.data))
+                        if self.debug:
+                            print(f'Setting shutter speed to {self.camera.shutter_speed}')
                     elif median > 120:
                         break
                     elif self.exposures >= self.max_exposures:
@@ -98,6 +104,12 @@ class Photo:
         return im
 
     def rotate(self) -> Image:
+        """
+        This just does self.image.transpose(Image.ROTATE_180)
+        as is here to remind me of the transpose command.
+
+        :return:
+        """
         # Image
         return self.image.transpose(Image.ROTATE_180)
 
