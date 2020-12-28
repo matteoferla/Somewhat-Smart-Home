@@ -1,0 +1,13 @@
+# $ sudo nano /etc/systemd/system/scheduled.service
+[Unit]
+Description=Run python scheduler
+After=network.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/
+ExecStart=python3 /home/pi/scheduled_tasks.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

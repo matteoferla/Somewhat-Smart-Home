@@ -1,7 +1,8 @@
 ## DHT22 server
 
 This is just a simple Flask server that logs and servers a DHT22.
-It uses the old DHT library.
+It uses the old DHT library, which has a depedency issue.
+The new library works weirdly with DHT11 (use_pulseio=False fixes it).
 
 ## DB
 
