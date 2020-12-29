@@ -20,27 +20,26 @@ First ssh:
 
     sudo apt update && sudo apt upgrade -y
 
+Git:
+
+    sudo apt-get -y install git
+    
 Using system python3, namely `/usr/bin/python3` as opposed to berryconda:
 
     sudo apt-get -y install python3-pandas
     sudo apt-get -y  install python3-dev
     sudo apt-get -y  install python3-pip
     sudo apt-get -y install python3-sqlalchemy
-    pip3 install jupyter RPi.GPIO waitress flask Flask-Ask Flask-SQLAlchemy beautifulsoup4 Pillow picamera adafruit-circuitpython-dht adafruit-blinka
+    sudo pip3 install jupyter RPi.GPIO waitress flask Flask-Ask Flask-SQLAlchemy beautifulsoup4 Pillow picamera adafruit-circuitpython-dht adafruit-blinka
 
-Git:
-
-    sudo apt-get install git
+Berryconda is good, but is limited to 3.6 max and does not allow SD card switching between arm6 and arm7 (`Illegal operation`).
 
 ## Jupyter
 
-### Install jupyter
+### Tweak jupyter
 
-Make sure/install Jupyter
+Make sure Jupyter is installed —previous block. Add password:
 
-    sudo apt-get -y  install python3-pandas
-    sudo apt-get -y  install python3-dev
-    sudo apt-get -y install python3-pip
     jupyter notebook password
     
 Having the same theme of a notebook as another one can be confusing

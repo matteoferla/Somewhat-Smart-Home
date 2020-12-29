@@ -23,12 +23,16 @@ class Photo:
                  stack=True,
                  max_exposures: int = 20,
                  debug=False,
+                 resolution=None,
                  autosave=False):
         self.exposures = 0
         self.debug = debug
         self.stack = stack
         self.max_exposures = max_exposures
         with PiCamera() as self.camera:
+            self.camera.CAPTURE_TIMEOUT = 1200  # twenty minutes
+            if resolution is not None:
+                self.camera.resolution = resolution
             self.data = np.zeros((self.camera.resolution[1], self.camera.resolution[0], 3))  # 480, 720
             self.__class__._camera = self.camera  # death prevention..
             self.camera.start_preview()
