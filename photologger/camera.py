@@ -1,5 +1,7 @@
 import time
 from picamera import PiCamera
+PiCamera.CAPTURE_TIMEOUT = 1200  # twenty minutes
+
 from PIL import Image
 from io import BytesIO
 import numpy as np
@@ -30,7 +32,6 @@ class Photo:
         self.stack = stack
         self.max_exposures = max_exposures
         with PiCamera() as self.camera:
-            self.camera.CAPTURE_TIMEOUT = 1200  # twenty minutes
             if resolution is not None:
                 self.camera.resolution = resolution
             self.data = np.zeros((self.camera.resolution[1], self.camera.resolution[0], 3))  # 480, 720
