@@ -26,6 +26,7 @@ class Photo:
                  max_exposures: int = 20,
                  debug=False,
                  resolution=None,
+                 correct=True,
                  autosave=False):
         self.exposures = 0
         self.debug = debug
@@ -60,7 +61,9 @@ class Photo:
                         # self.iso = 800
                         self.camera.shutter_speed = self.camera.exposure_speed * int(255 / np.max(self.data))
                         if self.debug:
-                            print(f'Setting shutter speed to {self.camera.shutter_speed}')
+                            print(f'Setting shutter speed to {self.camera.shutter_speed} '+ \
+                                  f'(previous exposure: {self.camera.exposure_speed}'+ \
+                                  f' times {int(255 / np.max(self.data))}')
                     elif median > 120:
                         break
                     elif self.exposures >= self.max_exposures:
@@ -69,7 +72,8 @@ class Photo:
                         pass  # new exposure
         self.__class__._camera = None
         self.data = self.per_channel(self.scale, self.data)
-        self.data = self.per_channel(self.histogram_stretch, self.data)
+        if correct:
+            self.data = self.per_channel(self.histogram_stretch, self.data)
         self.image = Image.fromarray(self.data)
         if autosave:
             self.save()

@@ -76,16 +76,48 @@ Adding something like:
     WantedBy=multi-user.target
    
 Don't be fancy with sudo printf or echo.
-Assuming jupyter is in `/home/pi/.local/bin/jupyter` and then:
-    
+Give the path of jupyter:
+
+* If jupyter was installed with sudo: `/usr/local/bin/`
+* If jupyter was installed without sudo: `/home/pi/.local/bin/jupyter`
+* If jupyter was installed with berryconda: `/home/pi/berryconda3/???/jupyter`
+
+and then:
+
     echo '#!/bin/bash\n/home/pi/.local/bin/jupyter notebook --no-browser --ip="*"' > run_jupyter.sh 
     sudo systemctl start jupyter
-    sudo systemctl status jupyter
     sudo systemctl enable jupyter
     
 If stuff does not work (generally filename wrong etc.)
+    
+    sudo systemctl status jupyter
+
+Or 
 
     sudo journalctl -u jupyter
+
+## Slack
+
+The above is fine, but it is nice to know who is who:
+
+    #!/bin/bash
+    
+    SLACKHOOK="https://hooks.slack.com/services/👾👾👾/👾👾👾/👾👾👾"
+    HOST_IP=$(hostname -I)
+    PAYLOADSLACK='{"text":"companion_pi '$HOST_IP'"}'
+    while true
+    do
+    echo 'FAILED'
+    curl -X POST -H 'Content-type: application/json' --data "$PAYLOADSLACK" $SLACKHOOK
+    if [ $? -eq 0 ]
+    then
+    break
+    fi
+    sleep 1
+    done
+    
+    /usr/bin/jupyter  notebook --no-browser --ip="*"
+
 ## Pins
 
 Show in a Jupyter notebook cell what the pins are:
