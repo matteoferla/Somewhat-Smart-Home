@@ -8,7 +8,18 @@ Make SSH on freshly flashed
 
     touch /Volumes/boot/ssh
     
-TODO ADD WIFI supplicant code.
+WIFI supplicant code:
+
+    nano /Volumes/boot/wpa_supplicant.conf
+    
+    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+    update_config=1
+    country=GB
+    
+    network={
+     ssid="👾👾👾👾"
+     psk="👾👾👾👾"
+    }
     
 ## First steps
 
@@ -101,13 +112,13 @@ Or
 The above is fine, but it is nice to know who is who:
 
     #!/bin/bash
-    
+    PI_NAME='👾👾👾'
     SLACKHOOK="https://hooks.slack.com/services/👾👾👾/👾👾👾/👾👾👾"
-    HOST_IP=$(hostname -I)
-    PAYLOADSLACK='{"text":"companion_pi '$HOST_IP'"}'
     while true
     do
-    echo 'FAILED'
+    echo 'reporting...'
+    HOST_IP=$(hostname -I)
+    PAYLOADSLACK='{"text":"$PI_NAME '$HOST_IP'"}'
     curl -X POST -H 'Content-type: application/json' --data "$PAYLOADSLACK" $SLACKHOOK
     if [ $? -eq 0 ]
     then
