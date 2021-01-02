@@ -71,9 +71,11 @@ class Photo:
                     else:
                         pass  # new exposure
         self.__class__._camera = None
-        self.data = self.per_channel(self.scale, self.data)
         if correct:
+            self.data = self.per_channel(self.scale, self.data)
             self.data = self.per_channel(self.histogram_stretch, self.data)
+        else:
+            self.data = self.data.astype('uint8')
         self.image = Image.fromarray(self.data)
         if autosave:
             self.save()
