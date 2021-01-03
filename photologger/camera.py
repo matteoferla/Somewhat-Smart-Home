@@ -8,8 +8,6 @@ import numpy as np
 from datetime import datetime
 import os
 
-from .flash import Flash
-
 
 ###################################################
 
@@ -32,44 +30,43 @@ class Photo:
         self.debug = debug
         self.stack = stack
         self.max_exposures = max_exposures
-        with PiCamera() as self.camera:
+        with PiCamera(led_pin=None) as self.camera:
             if resolution is not None:
                 self.camera.resolution = resolution
             self.data = np.zeros((self.camera.resolution[1], self.camera.resolution[0], 3))  # 480, 720
             self.__class__._camera = self.camera  # death prevention..
             self.camera.start_preview()
             time.sleep(warmup)
-            with Flash() as flash: # this should be using led_pin!
-                # while np.max(self.data) < 255 and self.exposures < 10:
-                while True:
-                    self.data = np.add(self.data, np.asarray(self.capture()))
-                    self.exposures += 1
+            # while np.max(self.data) < 255 and self.exposures < 10:
+            while True:
+                self.data = np.add(self.data, np.asarray(self.capture()))
+                self.exposures += 1
+                if self.debug:
+                    channel_flat = self.data.reshape((self.data.shape[0] * self.data.shape[1], 3))
+                    print(f'Per channel max intensities from exposure stack of {self.exposures}')
+                    print(np.max(channel_flat, axis=0))
+                    print(f'Per channel medians  intensities from exposure stack of {self.exposures}')
+                    print(np.median(channel_flat, axis=0))
+                median = np.median(self.data)
+                if not self.stack:
+                    break
+                elif self.exposures == 1 and median > 100:
+                    # don't stack for no reason.
+                    break
+                elif self.exposures == 1:
+                    self.camera.sensor_mode = 3
+                    # self.iso = 800
+                    self.camera.shutter_speed = self.camera.exposure_speed * int(255 / np.max(self.data))
                     if self.debug:
-                        channel_flat = self.data.reshape((self.data.shape[0] * self.data.shape[1], 3))
-                        print(f'Per channel max intensities from exposure stack of {self.exposures}')
-                        print(np.max(channel_flat, axis=0))
-                        print(f'Per channel medians  intensities from exposure stack of {self.exposures}')
-                        print(np.median(channel_flat, axis=0))
-                    median = np.median(self.data)
-                    if not self.stack:
-                        break
-                    elif self.exposures == 1 and median > 100:
-                        # don't stack for no reason.
-                        break
-                    elif self.exposures == 1:
-                        self.camera.sensor_mode = 3
-                        # self.iso = 800
-                        self.camera.shutter_speed = self.camera.exposure_speed * int(255 / np.max(self.data))
-                        if self.debug:
-                            print(f'Setting shutter speed to {self.camera.shutter_speed} '+ \
-                                  f'(previous exposure: {self.camera.exposure_speed}'+ \
-                                  f' times {int(255 / np.max(self.data))}')
-                    elif median > 120:
-                        break
-                    elif self.exposures >= self.max_exposures:
-                        break
-                    else:
-                        pass  # new exposure
+                        print(f'Setting shutter speed to {self.camera.shutter_speed} '+ \
+                              f'(previous exposure: {self.camera.exposure_speed}'+ \
+                              f' times {int(255 / np.max(self.data))}')
+                elif median > 120:
+                    break
+                elif self.exposures >= self.max_exposures:
+                    break
+                else:
+                    pass  # new exposure
         self.__class__._camera = None
         if correct:
             self.data = self.per_channel(self.scale, self.data)
@@ -109,6 +106,8 @@ class Photo:
 
     def capture(self) -> Image:
         stream = BytesIO()
+        # flash is not working?
+        #with Flash() as flash:  # this should be using led_pin!
         self.camera.capture(stream, format='jpeg')
         stream.seek(0)
         im = Image.open(stream)
