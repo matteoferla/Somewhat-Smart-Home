@@ -1,5 +1,9 @@
 ## Oregon scientific sensors
 
+> Addendum: I used an arduino, which has a better documented library only to discover 
+> that actually the range of the receiver is only 5 m or so even at 5 V.
+> I have bought a RFM12-433 MHz and will test it when I get round to it.
+
 I have two Oregon scientific sensors (THN132N) and a BAR266 display thinggy.
 I was given these for Christmas some time back and I have not really managed to intercept the signal to log them.
 
@@ -46,5 +50,4 @@ And there are (C scripts for it)[https://github.com/merbanan/rtl_433/blob/ea797c
 
 My guess is that the pulsetime is too short for the Pi to work, so I need to use an arduino, which requires more effort, so I have not tried.
 
-   
-   
+
