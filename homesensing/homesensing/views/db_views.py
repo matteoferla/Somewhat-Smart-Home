@@ -13,6 +13,9 @@ log = logging.getLogger(__name__)
 
 
 class DBViews:
+    """
+    These are the views of the API calls
+    """
     time_debug = False
 
     def __init__(self, request):
@@ -89,6 +92,7 @@ class DBViews:
 
         :return:
         """
+        self.authorise()
         entry = Details(sensor=self.get_value('sensor', str),
                         model=self.get_value('model', str),
                         location=self.get_value('location', str),
@@ -171,6 +175,22 @@ class DBViews:
                 'time_taken': self.time_taken
                 }
 
+    @view_config(route_name='delete', renderer='json')
+    def delete(self):
+        self.authorise()
+        entry_id = self.get_value('id', int)
+        mode = self.get_value('mode', str)
+        if mode == 'photo':
+            self.request \
+                .dbsession \
+                .query(Photo) \
+                .filter(Photo.id == entry_id)\
+                .delete()
+        else:
+            # this is a problem as the id is not sent serverside and there is not unique criterion
+            raise exc.HTTPBadRequest('Not implemented yet')
+        return {'status': f'deleted {mode} #{id} successfully'}
+
     @view_config(route_name='night', renderer='json')
     def night(self):
         start, stop = self.get_boundaries()
@@ -234,6 +254,11 @@ class DBViews:
         return dt.datetime.combine(datetime.date(), dt.time.min)
 
     def save_photo(self):
+        """
+        Called by ``store``.
+        :return:
+        """
+        self.authorise()
         sensor = re.sub('[^\w\.\_\-]', '_', self.get_value('sensor', str))
         extension = self.get_value('extension', str).replace('.', '')
         parent = os.path.split(__file__)[0]  # views

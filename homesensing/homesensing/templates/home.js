@@ -148,26 +148,28 @@ class Measurements {
 
     makePhotoCard(sensor, i) {
         const entry = this.photos[sensor][i];
-        return `<div class="card m-2">
-                    <img src="${entry.path}" class="card-img-top" alt="${sensor}" data-sensor="${sensor}">
-                    <div class="card-body">
-                    <h3 class="card-title">${sensor}</h3>
-                        <p class="card-text" data-sensor="${sensor}">
-                            <div class="d-flex flex-row">
-                                <div class="align-self-start">
-                                <button class="btn btn-outline-success photobtn previous" data-sensor="${sensor}" data-goto="${i - 1}">                         
-                                    <i class="fas fa-chevron-left"></i></div>
-                                </button>
-                                <div class="flex-fill text-center"  data-sensor="${sensor}">${entry.datetime}</div>
-                                <div class="align-self-end">
-                                    <button class="btn btn-outline-success photobtn next" data-sensor="${sensor}"  data-goto="${i + 1}">                         
-                                        <i class="fas fa-chevron-right"></i></div>
-                                    </button>
-                                </div>
-                            </div>
-                        </p>
-                    </div>
-                </div>`
+        return `
+<div class="card m-2">
+   <img src="${entry.path}" class="card-img-top" alt="${sensor}" data-sensor="${sensor}">
+   <div class="card-body">
+      <h3 class="card-title">${sensor}</h3>
+      <div class="card-text" data-sensor="${sensor}">
+         <div class="d-flex flex-row">
+            <div class="align-self-start">
+               <button class="btn btn-outline-success photobtn previous" data-sensor="${sensor}" data-goto="${i - 1}">                         
+               <i class="fas fa-chevron-left"></i>
+               </button>
+            </div>
+            <div class="flex-fill text-center"  data-sensor="${sensor}" data-id="${entry.id}">${entry.datetime}</div>
+            <div class="align-self-end">
+               <button class="btn btn-outline-success photobtn next" data-sensor="${sensor}"  data-goto="${i + 1}">                         
+               <i class="fas fa-chevron-right"></i>
+               </button>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>`
     }
 
     showLatestPhoto() {
