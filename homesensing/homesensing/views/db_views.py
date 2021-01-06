@@ -1,13 +1,11 @@
-from pyramid.view import view_config, view_defaults
-from pyramid.response import Response
+from pyramid.view import view_config
 from ..models import Measurement, Photo, Details, Sunpath
-from sqlalchemy.exc import DBAPIError
 import pyramid.httpexceptions as exc
 import datetime as dt
-import os, re, shutil, time
+import os, re, shutil
 import logging, time, requests
 import uuid
-from .authenticate import Authenticator
+from ..utilities import Authenticator, gifify
 
 log = logging.getLogger(__name__)
 
@@ -205,6 +203,28 @@ class DBViews:
         # get data
         nights, twilights = self.get_nighttime(dates)
         return {'nights': nights, 'twilights': twilights}
+
+    @view_config(route_name='gifify', renderer='json')
+    def gifify(self):
+        sensor_forename = self.get_value('sensor', str).replace(':photo', '')
+        # from utilities
+        data = requests.get('http://localhost:8000/show').json()['photos']
+        query_search = self.request \
+                            .dbsession \
+                            .query(Photo) \
+                            .filter(Photo.sensor == f'{sensor_forename}:photo')
+        photo_entries = [self.row2dict(row) for row in query_search.all()]
+        log.info(f'Gififying: {sensor_forename} photos')
+        final_filename = gifify(sensor_forename, photo_entries)
+        # === return
+        return {'filename': final_filename,
+                'sensor': sensor_forename,
+                'time_taken': self.time_taken
+                }
+
+
+
+
 
     # ========= dependents  =============================================
 

@@ -1,7 +1,10 @@
 # Somewhat-Smart-Home
 Integrating the Raspberry pi across the house!
 
-This repo contains several projects.
+This repo contains several projects and supercedes others:
+
+* [https://github.com/matteoferla/Temperature-moniting-website-via-Rasberry-Pi](https://github.com/matteoferla/Temperature-moniting-website-via-Rasberry-Pi)
+* [https://github.com/matteoferla/Raspberry-Pi-irrigator](https://github.com/matteoferla/Raspberry-Pi-irrigator) —actually the latter still contains a lot of useful info
 
 ## Set-up
 

@@ -4,6 +4,7 @@ import adafruit_dht, board
 
 dht = adafruit_dht.DHT22(board.D${sensors['DHT22']}, use_pulseio=True)
 #Adafruit_DHT.read(22, 17) #An AM2306 is the same as a DHT22.
+# use_pulseio=False?
 time.sleep(0.5)
 
 def dht_sense():
