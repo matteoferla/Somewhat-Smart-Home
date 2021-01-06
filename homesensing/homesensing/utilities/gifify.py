@@ -19,7 +19,11 @@ def gifify(sensor_forename, photo_entries):
         if not os.path.exists(path):  # image removed (dick pic photobomb)
             log.warning(f'Cannot find file {entry["path"]}')
             continue
-        im = Image.open(path)
+        try:
+            im = Image.open(path)
+        except Exception as error:
+            log.warning(f'Cannot read file {entry["path"]}')
+            continue
         draw = ImageDraw.Draw(im)
         draw.text((0, 0), entry['datetime'], font=font, fill='cyan')
         im.thumbnail(size, Image.ANTIALIAS)
