@@ -206,6 +206,10 @@ class DBViews:
 
     @view_config(route_name='gifify', renderer='json')
     def gifify(self):
+        """
+        /gifify?sensor='mushroom'
+        :return:
+        """
         sensor_forename = self.get_value('sensor', str).replace(':photo', '')
         # from utilities
         data = requests.get('http://localhost:8000/show').json()['photos']
@@ -214,6 +218,8 @@ class DBViews:
                             .query(Photo) \
                             .filter(Photo.sensor == f'{sensor_forename}:photo')
         photo_entries = [self.row2dict(row) for row in query_search.all()]
+        print('******** {sensor_forename}')
+        print(photo_entries)
         log.info(f'Gififying: {sensor_forename} photos')
         final_filename = gifify(sensor_forename, photo_entries)
         # === return
