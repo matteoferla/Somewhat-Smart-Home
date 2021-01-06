@@ -2,6 +2,9 @@ import os
 from PIL import Image, ImageFont, ImageDraw
 import imageio
 import pygifsicle # requires gifsicle
+import logging
+
+log = logging.getLogger(__name__)
 
 folder = os.path.split(__file__)[0]
 parent = os.path.split(folder)[0]
@@ -13,7 +16,9 @@ def gifify(sensor_forename, photo_entries):
     font = ImageFont.truetype("Vera.ttf", 32)
     for entry in photo_entries:
         path = os.path.join(target_folder, entry['path'])
+        print(path)
         if not os.path.exists(path):  # image removed (dick pic photobomb)
+            log.warning(f'Cannot find file {entry["path"]}')
             continue
         im = Image.open(path)
         draw = ImageDraw.Draw(im)
