@@ -103,7 +103,7 @@ That is with `alsamixer` set to max and the variable resistor left as is.
 
 Audio-in with a 10 nF ceramic cap (manually determined) to gnd can stop the tinniness, but lowers volume.
 
-The best explanation of the PWM audio I found is https://librpip.frasersdev.net/peripheral-config/pwm0and1/
+The best explanation of the PWM audio I found is [this post](https://librpip.frasersdev.net/peripheral-config/pwm0and1/).
 To configure PWM audio add to `/boot/config.txt`, but first copy it:
 
     mkdir backup

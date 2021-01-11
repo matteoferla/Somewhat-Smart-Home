@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-import time, digitalio, board, pulseio
+import digitalio, board, pulseio
 
 class FurbyMotor:
-    soundcard_status_file = '/proc/asound/card0/pcm0p/sub0/status'
+    """
+    TB6612 motor driver and sensor to control cycles (pull-up)
+    """
     high_speed = 0xffff
 
-    def __init__(self, pwma: int = 7, stby: int = 13, ain1: int = 16, ain2: int = 11):
+    def __init__(self, pwma: int = 7, stby: int = 13, ain1: int = 16, ain2: int = 11, cycle: int = 21):
         # standby: H-bridges to work when high
         self.standby_pin = digitalio.DigitalInOut(digitalio.Pin(stby))
         self.standby_pin.switch_to_output(False)
@@ -20,6 +22,9 @@ class FurbyMotor:
         self.pwm_pin = pulseio.PWMOut(pin=digitalio.Pin(pwma),
                                       duty_cycle=0,
                                       frequency=100)
+        # cycle pin
+        self.cycle_pin = digitalio.DigitalInOut(digitalio.Pin(cycle))
+        self.cycle_pin.switch_to_input(pull=digitalio.Pull.UP)
 
     def move_clockwise(self):
         self.standby_pin.value = True
@@ -39,27 +44,8 @@ class FurbyMotor:
         self.ain1_pin.value = False
         self.ain2_pin.value = False
 
-    @property
-    def playing(self):
-        with open(self.soundcard_status_file, 'r') as fh:
-            value = fh.read()
-        if value == 'RUNNING':
-            return True
-        else: # 'closed'
-            return False
-
-    def move_on_play(self):
-        if self.playing:
-            self.move_clockwise()
-        else:
-            self.halt()
-
     def set_percent_speed(self, speed:int):
         self.high_speed = int(speed/100 * 0xffff)
-
-
-if __name__ == '__main__':
-    furby = FurbyMotor()
-    while True:
-        furby.move_on_play()
+        if self.ain1_pin.value or self.ain2_pin.value:
+            self.pwm_pin.duty_cycle = self.high_speed
 
