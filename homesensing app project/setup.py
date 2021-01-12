@@ -28,9 +28,9 @@ tests_require = [
 ]
 
 setup(
-    name='homesensing',
+    name='homesensing app project',
     version='0.0',
-    description='homesensing',
+    description='homesensing app project',
     long_description=README,
     classifiers=[
         'Programming Language :: Python',
@@ -51,10 +51,10 @@ setup(
     install_requires=requires,
     entry_points={
         'paste.app_factory': [
-            'main = homesensing:main',
+            'main = homesensing app project:main',
         ],
         'console_scripts': [
-            'initialize_homesensing_db=homesensing.scripts.initialize_db:main',
+            'initialize_homesensing_db=homesensing app project.scripts.initialize_db:main',
         ],
     },
 )

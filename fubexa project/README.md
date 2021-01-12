@@ -2,6 +2,11 @@
 
 The idea and the majority of the setup came form [a blog post](https://howchoo.com/g/otewzwmwnzb/amazon-echo-furby-using-raspberry-pi-furlexa)
 However, there were lots of problems and differences.
+Namely
+
+* the code here is IMO cleaner, along with extra functionality
+* the components are squeezed in differently
+* gyroscope
 
 ## Hardware
 
@@ -22,25 +27,31 @@ The Furby has
 Parts I have added:
 
 * Pi Zero W
+* MPU-6050 Gyroscope
+* 
+*
 * 4x rechargeable AA (each 1.3V)
 
 ## Tests
 
-Some suggestions to test for second hand Furbies off the web sold as is...
+Based on a sample size of one, here are some suggestions to test for second hand Furbies off the web sold as is...
 
-* test mouth button —ears, eyelids and cycle trigger
-* test speaker
-* test motor (5V is fine)
+* test if it turns on —probably not
 * test battery unit
+* test motor (5V is fine)
+* test mouth button (closing a 3V circuit with a white LED)
+* test speaker
 
-Mine had a dodgy battery unit (rusty and broken connector).
+Mine had a dodgy battery unit (rusty and broken connector), so needed disassembly, scrubbing, WD40 and soldering.
 
 ## Pi
 
 So I really struggled to pack a Pi Zero between the body and the battery unit.
 Regular header pins fit but not with wires on them (I was using chunky 18 gauge).
-I failed to solder wires on the board without them coming off etc.
-So I opted for the two row angle header pins with a gap.
+I failed to solder wires on the board without them coming off etc. because I had solid core 22 gauge.
+Maybe 22 gauge or higher wires would have worked.
+
+So I opted for the two row angle header pins with a gap, which worked well.
 
 The shim + microphone does not fit in. So two things were tried:
 
@@ -73,7 +84,7 @@ Adding to `.bash_profile`:
     
 ### Jupyter
 
-As discussed elsewhere
+As discussed in (setting_up)[../setting_up.md]:
 
     nano run_jupyter.sh
     sudo nano /etc/systemd/system/jupyter.service
@@ -244,3 +255,9 @@ The very minimum would be a GPIO13 -> resistor -> PNP transistor base -> TB6612 
 
 * list mikes: `arecord -l`
 * test mikes: `arecord -D plughw:1,0 -d 3 test.wav && aplay test.wav`
+
+
+
+
+sudo apt-get install espeak
+sudo pip3 install pyttsx3

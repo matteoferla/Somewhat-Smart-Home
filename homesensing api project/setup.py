@@ -15,10 +15,10 @@ tests_require = [
 ]
 
 setup(
-    name='homesensing_api',
+    name='homesensing api project',
     version='0.0',
-    description='homesensing_api',
-    long_description='API to homesensing.',
+    description='homesensing api project',
+    long_description='API to homesensing app project.',
     classifiers=[
         'Programming Language :: Python',
         'Framework :: Pyramid',
@@ -38,10 +38,10 @@ setup(
     install_requires=requires,
     entry_points={
         'paste.app_factory': [
-            'main = homesensing:main',
+            'main = homesensing app project:main',
         ],
         'console_scripts': [
-            'initialize_homesensing_db=homesensing.scripts.initialize_db:main',
+            'initialize_homesensing_db=homesensing app project.scripts.initialize_db:main',
         ],
     },
 )

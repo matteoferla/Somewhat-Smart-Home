@@ -19,16 +19,18 @@ There are a few things I do on every Pi:
 
 ## Furbexa
 
-> TODO move data over and collect photos
+> See (Furby)[furby/furbexa.md].
 
 ## Homesensing
-
-> TODO this project is not up yet
 
 This has two parts.
 
 * Miscellaneous Raspberry Pis across the house with different sensors
 * A webserver Raspberry Pi (Pi 2) that receives the measurements and serves them
+
+> See (homesensing)[homesensing/README.md] for website
+> See (homesensing API)[homesensing_api/homesensing_api.py] for API to upload data
+> See (schedule)[schedule/README.md] for a collection of scripts
 
 ## Webservers
 
