@@ -43,6 +43,18 @@ class FurbyGyro:
     def is_moved(self):
         return abs(self.get_speed()['x']) > 10 or abs(self.get_speed()['y']) > 10
 
+    @property
+    def lifted(self):
+        return self.is_lifted()
+
+    @property
+    def moved(self):
+        return self.is_moved()
+
+    def wait_until_moved(self):
+        while not self.is_lifted() and not self.is_moved():
+            pass
+
 
 
 

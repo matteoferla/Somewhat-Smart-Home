@@ -33,3 +33,13 @@ class FurbyButtons:
     @property
     def squeezed(self):
         return self.fore_squeezed or self.aft_squeezed
+
+    # === Waits ==============================
+
+    def wait_until_squeezed(self):
+        while not self.squeezed:
+            pass
+
+    def wait_until_bitten(self):
+        while not self.bitten:
+            pass

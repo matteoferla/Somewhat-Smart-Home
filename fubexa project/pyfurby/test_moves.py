@@ -1,9 +1,9 @@
-import board, digitalio, time
+import board, digitalio, time, random
 from typing import Optional
 
 class FurbyTests:
     """
-    This is a test mode.
+    These are silly moves. Compound moves.
     """
 
     def ambulance(self, cycles: int = 50):
@@ -17,29 +17,12 @@ class FurbyTests:
         self.green_pin.value = False
         self.red_pin.value = False
 
-    def dance(self, speed:Optional[float]=None):
-        if speed:
-            self.set_percent_speed(speed)
-        self.move_clockwise()
-        for i in range(5):
-            while True:
-                if not self.cycle_pin.value:
-                    print(f'{i} CCW')
-                    self.move_counterclockwise()
-                    time.sleep(1)
-                    break
-            while  True:
-                if not self.cycle_pin.value:
-                    print(f'{i} CW')
-                    self.move_clockwise()
-                    time.sleep(1)
-                    break
-        self.halt()
+    # Mixed ================================================================
 
     def bite(self):
-        while self.mouth_pin.value:
-            pass
-        print('woof')
+        self.wait_until_bitten()
+        self.red_pin.value = True
+        self.say('woof')
         for i in range(20):
             self.green_pin.value = True
             self.red_pin.value = True
@@ -47,3 +30,58 @@ class FurbyTests:
             self.green_pin.value = False
             self.red_pin.value = False
             time.sleep(0.05)
+        self.complete_revolution()
+
+    ## Motor based.
+
+    def flutter(self, cycles: int=5):
+        self.set_percent_speed(70)
+        for i in range(cycles):
+            for action in (self.move_clockwise, self.move_counterclockwise):
+                action()
+                time.sleep(0.2)
+                self.wait_until_revolution()
+                time.sleep(0.2)
+        self.halt()
+
+    def fall_asleep(self):
+        self.complete_revolution(70)
+        self.halt()
+        self.set_percent_speed(55)
+        self.move_clockwise()
+        time.sleep(5)
+        self.halt()
+
+    def shut_eyes(self, quickly=False):
+        self.complete_revolution(70)
+        if quickly:
+            speed = 100
+            tock = 1.2
+        else:
+            speed = 70
+            tock = 2
+        self.set_percent_speed(speed)
+        self.move_clockwise()
+        time.sleep(tock)
+        self.halt()
+
+    def dance(self, speed:Optional[float]=None, cycles:int=10):
+        if speed:
+            self.set_percent_speed(speed)
+        self.complete_revolution()
+        for i in range(cycles):
+            tempo = random.random()
+            self.move_counterclockwise()
+            time.sleep(tempo)
+            self.move_clockwise()
+            time.sleep(tempo)
+        self.halt()
+
+    def blink(self, cycles:int=10):
+        self.shut_eyes(quickly=True)
+        self.set_percent_speed(100)
+        for i in range(cycles):
+            for action in (self.move_clockwise, self.move_counterclockwise):
+                action()
+                time.sleep(0.4)
+        self.halt()

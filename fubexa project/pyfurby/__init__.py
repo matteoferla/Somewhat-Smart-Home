@@ -12,30 +12,35 @@ from .sound import FurbySound
 from .test_moves import FurbyTests
 
 import time
+from typing import Optional, Callable, Dict
 
 
 class Furby(FurbyMotor, FurbyButtons, FurbyTalk, FurbySound, FurbyTests):
 
     def __init__(self,
-                 pwma: int = 22,  # white
-                 stby: int = 4,  # yellow
-                 ain1: int = 27,
-                 ain2: int = 17,
-                 cycle: int = 21,
-                 red: int = 14,
-                 green: int = 24,
-                 mouth: int = 18,
-                 chest: int = 20,
-                 back: int = 16,
-                 voice_name: str = 'en-scottish+m4',
-                 voice_volume: int = 0.7,
-                 voice_rate: int = 200):
+                 pwma: int = 22,  # motor driver speed - white
+                 stby: int = 4,  # motor driver on
+                 ain1: int = 27, # motor driver forward
+                 ain2: int = 17, # motor driver reverse
+                 cycle: int = 21, # revolution button (pull-up input)
+                 red: int = 14, # red LED (output)
+                 green: int = 24, # green LED (output)
+                 mouth: int = 18, # mouth button (pull-up input)
+                 chest: int = 20, # chest button (pull-up input)
+                 back: int = 16, # back button (pull-up input)
+                 voice_name: str = 'en-scottish+m4', # espeak/pyttsx3
+                 voice_volume: int = 0.7, # espeak/pyttsx3
+                 voice_rate: int = 200): # espeak/pyttsx3
         FurbyMotor.__init__(self, pwma=pwma, stby=stby, ain1=ain1, ain2=ain2, cycle=cycle)
         FurbyButtons.__init__(self, red=red, green=green, mouth=mouth, chest=chest, back=back)
         FurbyTalk.__init__(self, voice_name=voice_name, voice_rate=voice_rate, voice_volume=voice_volume)
         # FurbySound and FurbyTests no init.
 
     def move_on_play(self):
+        """
+        This is for playing sound not via say/yell.
+        :return:
+        """
         while True:
             if self.playing:
                 self.move_clockwise()
@@ -48,11 +53,24 @@ class Furby(FurbyMotor, FurbyButtons, FurbyTalk, FurbySound, FurbyTests):
         super().say(text)
         self.halt()
 
-    def action_cycle(self):
-        pass
+    def yell(self, text):
+        original_volume = self.engine.self.engine.getProperty('volume')
+        original_speed = self.high_speed
+        # max
+        self.set_percent_speed(100)
+        self.red_pin.value = True
+        self.engine.self.engine.setProperty('volume', 1)
+        self.say(text)
+        self.high_speed = original_speed
+        self.engine.self.engine.setProperty('volume', original_volume)
 
-# if __name__ == '__main__':
-#     #pwma: int = 7, stby: int = 13, ain1: int = 16, ain2: int = 11
-#     furby = SoundMotor()
-#     while True:
-#         furby.move_on_play()
+    permitted_actions = ['lifted', 'moved', 'bitten', 'squeezed', 'aft_squeezed', 'fore_squeezed']
+
+    def action_cycle(self, actions: Dict[str, Callable]):
+        for trigger_name, action in actions.items():
+            if trigger_name in self.permitted_actions and getattr(self, trigger_name):
+                action()
+
+    def loop_actions(self, actions: Dict[str, Callable]):
+        while True:
+            self.action_cycle(actions)

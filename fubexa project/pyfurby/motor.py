@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import digitalio, board, pulseio
+from typing import Optional
 
 class FurbyMotor:
     """
@@ -44,8 +45,17 @@ class FurbyMotor:
         self.ain1_pin.value = False
         self.ain2_pin.value = False
 
-    def set_percent_speed(self, speed:int):
+    def set_percent_speed(self, speed: int):
         self.high_speed = int(speed/100 * 0xffff)
         if self.ain1_pin.value or self.ain2_pin.value:
             self.pwm_pin.duty_cycle = self.high_speed
 
+    def wait_until_revolution(self):
+        while self.cycle_pin.value:
+            pass
+
+    def complete_revolution(self, speed: Optional[int]=None):
+        if speed:
+            self.set_percent_speed(speed)
+        self.move_counterclockwise()
+        self.wait_until_revolution()
