@@ -2,7 +2,7 @@ import os
 
 from setuptools import setup, find_packages
 
-here = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+here = os.path.abspath(os.path.dirname(__file__))
 
 requires = [
     'board', 'digitalio', 'pulseio' #wrong as circuitpython is installed with blinka something.
