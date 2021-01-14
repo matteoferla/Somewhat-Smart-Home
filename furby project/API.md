@@ -22,7 +22,6 @@ If the Furby has any differences from my set-up
 * `voice_volume`: int = 0.7, espeak/pyttsx3
 * `voice_rate`: int = 200, espeak/pyttsx3
 
-
 It has some preset actions, such as:
     
     furby.ambulance() # make its LED flash like an ambulance
@@ -33,7 +32,10 @@ It has some preset actions, such as:
     furby.flutter() # "blink" salaciously
     furby.blink()
     
-There are all small snippets using the same motor controls:
+ 
+## Motor
+
+These are all small snippets using the same motor controls:
 
     furby.set_percent_speed(70) # a value between 55 and 100 percent.
     furby.move_clockwise() # background movement
@@ -61,6 +63,9 @@ The motor is powered by 3.3V, the percentage is already converted from hexadecim
 | 90% | 2.2 s |
 | 100% | 1.9 s |
 
+
+## Talk
+
 The gender on espeak/pyttsx3 is controlled by adding `+m1` to `+m4` for male or `+f1` to `+f4` for female after the voice id.
 To get the full list of voices:
 
@@ -77,5 +82,19 @@ In English:
 * `english_wmids` (West Midlands)
 * `english-us`
 * `en-westindies`
+
+## Loop
+
+Given a dictionary with key one of the `furby.permitted_actions` ('lifted', 'moved', 'bitten', 'squeezed', 'aft_squeezed', 'fore_squeezed'),
+and value a function, `furby.loop_actions` will call those function when those action is triggered.
+
+Most of these permitted actions have a `wait_until_xxx` method. None of these are asynchronous.
+
+    furby.loop_actions({'lifted': lambda: furby.yell('Put me down now!'),
+                        'squeezed': furby.fall_asleep,
+                        })
+
+
+
 
     

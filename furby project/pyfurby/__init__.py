@@ -9,13 +9,14 @@ from .buttons import FurbyButtons
 from .motor import FurbyMotor
 from .talk import FurbyTalk
 from .sound import FurbySound
+from .gyro import FurbyGyro
 from .test_moves import FurbyTests # more like silly actions
 
 import time
 from typing import Optional, Callable, Dict
 
 
-class Furby(FurbyMotor, FurbyButtons, FurbyTalk, FurbySound, FurbyTests):
+class Furby(FurbyMotor, FurbyButtons, FurbyTalk, FurbySound, FurbyTests, FurbyGyro):
 
     def __init__(self,
                  pwma: int = 22,  # motor driver speed - white
@@ -34,6 +35,7 @@ class Furby(FurbyMotor, FurbyButtons, FurbyTalk, FurbySound, FurbyTests):
         FurbyMotor.__init__(self, pwma=pwma, stby=stby, ain1=ain1, ain2=ain2, cycle=cycle)
         FurbyButtons.__init__(self, red=red, green=green, mouth=mouth, chest=chest, back=back)
         FurbyTalk.__init__(self, voice_name=voice_name, voice_rate=voice_rate, voice_volume=voice_volume)
+        FurbyGyro.__init__(self)
         # FurbySound and FurbyTests no init.
 
     def move_on_play(self):
