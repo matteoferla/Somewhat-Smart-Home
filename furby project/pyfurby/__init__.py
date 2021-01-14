@@ -9,7 +9,7 @@ from .buttons import FurbyButtons
 from .motor import FurbyMotor
 from .talk import FurbyTalk
 from .sound import FurbySound
-from .test_moves import FurbyTests
+from .test_moves import FurbyTests # more like silly actions
 
 import time
 from typing import Optional, Callable, Dict
@@ -54,15 +54,15 @@ class Furby(FurbyMotor, FurbyButtons, FurbyTalk, FurbySound, FurbyTests):
         self.halt()
 
     def yell(self, text):
-        original_volume = self.engine.self.engine.getProperty('volume')
+        original_volume = self.volume
         original_speed = self.high_speed
         # max
         self.set_percent_speed(100)
         self.red_pin.value = True
-        self.engine.self.engine.setProperty('volume', 1)
+        self.volume = 1.
         self.say(text)
         self.high_speed = original_speed
-        self.engine.self.engine.setProperty('volume', original_volume)
+        self.volume = original_volume
 
     permitted_actions = ['lifted', 'moved', 'bitten', 'squeezed', 'aft_squeezed', 'fore_squeezed']
 

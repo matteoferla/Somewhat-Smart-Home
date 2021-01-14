@@ -51,6 +51,17 @@ class FurbyTests:
         self.move_clockwise()
         time.sleep(5)
         self.halt()
+        original_volume = self.volume
+        original_rate = self.rate
+        self.volume = 0.1
+        self.rate = 50
+        self.say('zzzz', move=False)
+        time.sleep(1)
+        self.say('zzzz', move=False)
+        time.sleep(1)
+        self.say('zzzz', move=False)
+        self.volume = original_volume
+        self.rate = original_rate
 
     def shut_eyes(self, quickly=False):
         self.complete_revolution(70)
