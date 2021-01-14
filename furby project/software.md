@@ -151,6 +151,10 @@ So one would need to have an intensity based cutoff to make it jerky.
 However, there is no space to add custom circuitry like bandpass filters etc.
 The very minimum would be a GPIO13 -> resistor -> PNP transistor base -> TB6612 and that is already too much.
 
+## API
+
+
+
 ## USB Microphone
 
 * list mikes: `arecord -l`
