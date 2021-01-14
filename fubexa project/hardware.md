@@ -86,17 +86,20 @@ So apart from the confusion of the pins, soldering upside down may run the risk 
 A key challenge is finding the space to put things. I started off adding JST connectors, but I quickly dropped that
 because there was no space.
 However, there is space, it just that there are no go spaces that have to contended with.
-So all the wires and components are kepts fixed with lots and lots of bluetack.
+So all the wires and components are kept fixed with lots and lots of bluetack.
 
 What fits in is limited by the shell. Here are key parts that need to be keep under close scrutiny.
 
 ![nogo](images/nogo_shell.JPG)
 
-This is because they slot into:
+The side protuberances slot into:
 
 ![lhs](images/left_nogo.JPG)
 ![rhs](images/right_nogo.JPG)
 
+The parts internally that cannot be covered are:
+
+![nogo](images/nogo_internal.JPG)
 
 ### microphone
 
@@ -155,9 +158,15 @@ However, the reset button had a spring which sprung off somewhere, so that is a 
 ![extra](images/extras.JPG)
 
 ## Boards
-The Amp is small enough that it can go on the side.
+The Amp is small enough that it can go on the side. Also, a lot of GND wires... this is probably the worst wiring ever.
 
 ![amp](images/amp.JPG)
+
+On a breadboard the speaker was fine powered by 5V, but tiny, but a 10 nF cap between the PWM GPIO13 wire and GND fixes it as expected.
+I only have this size or the big boys (this works best). Maybe the PWM can be smoothed further, but it is clear enough.
+
+![cap](images/cap.JPG)
+
 
 While the gyroscope and the motor driver can go at the end of the battery pack topside.
 
@@ -167,3 +176,11 @@ Here I placed it at an angle, which means Earth gravity is not an acceleration o
 However, this can be fixed by some vector calculus.
 
 ![gyro](images/gyro.JPG)
+
+In hindsight, I would have wired ground and 5V differently, but the placement of the boards is fine.
+
+The month sensor (white) wires were not too sturdy and came off easily, so I had to re-soldered them twice.
+I should have desoldered and used a better wire.
+
+I removed the internal board on the forehead, added a small green and a red LED and an unconnected photoresistor.
+The LEDs work well even with the tinted cover.

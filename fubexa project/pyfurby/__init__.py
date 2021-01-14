@@ -11,6 +11,8 @@ from .talk import FurbyTalk
 from .sound import FurbySound
 from .test_moves import FurbyTests
 
+import time
+
 
 class Furby(FurbyMotor, FurbyButtons, FurbyTalk, FurbySound, FurbyTests):
 
@@ -34,10 +36,12 @@ class Furby(FurbyMotor, FurbyButtons, FurbyTalk, FurbySound, FurbyTests):
         # FurbySound and FurbyTests no init.
 
     def move_on_play(self):
-        if self.playing:
-            self.move_clockwise()
-        else:
-            self.halt()
+        while True:
+            if self.playing:
+                self.move_clockwise()
+            else:
+                self.halt()
+            time.sleep(0.1)
 
     def say(self, text:str, move: bool=True):
         self.move_clockwise()
