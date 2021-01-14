@@ -1,15 +1,11 @@
 import board, digitalio, time
 
-from .motor import FurbyMotor
-
-
 class FurbyButtons:
     """
     There are a few buttons. All configured as pull-ups
     """
 
     def __init__(self, red: int = 14, green: int = 24, mouth: int = 18, chest: int=20, back: int=16):
-        super().__init__()
         # LEDs
         self.red_pin = digitalio.DigitalInOut(digitalio.Pin(red))
         self.green_pin = digitalio.DigitalInOut(digitalio.Pin(green))

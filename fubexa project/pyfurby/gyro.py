@@ -37,5 +37,12 @@ class FurbyGyro:
     def temperature(self):
         return self.gyro.get_temp()
 
+    def is_lifted(self):
+        return abs(self.get_speed()['z']) > 10
+
+    def is_moved(self):
+        return abs(self.get_speed()['x']) > 10 or abs(self.get_speed()['y']) > 10
+
+
 
 

@@ -19,7 +19,7 @@ There are a few things I do on every Pi:
 
 ## Furbexa
 
-> See (Furby)[furby/furbexa.md].
+> See [Furby](fubexa%20project/README.md)
 
 ## Homesensing
 
@@ -28,9 +28,9 @@ This has two parts.
 * Miscellaneous Raspberry Pis across the house with different sensors
 * A webserver Raspberry Pi (Pi 2) that receives the measurements and serves them
 
-> See (homesensing)[homesensing/README.md] for website
-> See (homesensing API)[homesensing_api/homesensing_api.py] for API to upload data
-> See (schedule)[schedule/README.md] for a collection of scripts
+> See [homesensing app project](homesensing%20app%20project/README.md) for website
+> See [homesensing api project](homesensing%20api%20project/README.md) for API to upload data
+> See [scheduled recording project](scheduled%20recording%20project/README.md) to make the scheduled sensing task
 
 ## Webservers
 
