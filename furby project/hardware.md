@@ -77,7 +77,7 @@ Even though I am unable to do a splice properly I am very pleased with this solu
 
 Here is the GPIO pins as seen from the bottom face, i.e. pitched 180° (around the transverse axis) ([Adobe Illustrator file](images/upsidedown_GPIO.ai)):
 
-![pins](images/upsidedown_GPIO-01.png)
+![upside down pins](images/upsidedown_GPIO-01.png)
 
 Actually the first board had a defective wifi on account of a scratch on on it,
 I must have done it as the trace runs to a test pad.
