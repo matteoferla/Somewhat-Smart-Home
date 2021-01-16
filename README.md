@@ -6,6 +6,11 @@ This repo contains several projects and supercedes others:
 * [https://github.com/matteoferla/Temperature-moniting-website-via-Rasberry-Pi](https://github.com/matteoferla/Temperature-moniting-website-via-Rasberry-Pi)
 * [https://github.com/matteoferla/Raspberry-Pi-irrigator](https://github.com/matteoferla/Raspberry-Pi-irrigator) —actually the latter still contains a lot of useful info
 
+Some of the following folders have a `README.md` and `setup.py` as if they were separate repos.
+The reason for having a single repo is that I don't really want to flood my GitHub with hobby projects and
+there are tons of snippets, which I can dump here.
+
+
 ## Set-up
 
 > See [setup](setting_up.md)
@@ -17,9 +22,9 @@ There are a few things I do on every Pi:
 * Slack message of it's IP address
 * etc.
 
-## Furbexa
+## Furby
 
-> See [Furby](fubexa%20project/README.md)
+The Furby project got moved to its own repo: [matteoferla/pyfurby](https://github.com/matteoferla/pyfurby).
 
 ## Homesensing
 
