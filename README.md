@@ -47,6 +47,12 @@ However, I do not want to stress too much even if it's 4 GB.
 Furthermore, I do not want to use the GPIO (well, bar for the fan as it gets rather hot)
 because shorting will reset the Pi and Ubuntu x64 is a pain with the GPIO.
 
+## Other
+
+The module photologger takes photos, but can stack in the case of low light — a LED however is always a better solution.
+
+![mushroom](images/mushroom.jpeg)
+
 
 
 
