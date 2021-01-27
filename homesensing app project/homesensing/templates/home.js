@@ -82,7 +82,7 @@ class Measurements {
         // newest_last
         if (Object.keys(this.latest).length === 0) {
             this.latest = this.data.reduce((accumulator, currentValue) => {
-                accumulator[currentValue.sensor] = currentValue.value;
+                accumulator[currentValue.sensor] = currentValue;
                 return accumulator
             }, {});
             this.showLatestMeasurements();
@@ -137,9 +137,13 @@ class Measurements {
                         ${key}
                       </div>
                         <div class="card-body">
-                          <h3 class="card-title">${Number(this.latest[key].toFixed(1))}
+                          <h3 class="card-title">${Number(this.latest[key].value.toFixed(1))}
                                                  ${this.getUnit(key)}</h3>
-                          <p class="card-text text-muted">${this.getExtras(key)}</p>
+                          <p class="card-text text-muted">
+                            ${this.getExtras(key)}
+                          <br/>
+                            (${this.latest[key].datetime})
+                          </p>
                         </div>
                       </div>`);
         });
