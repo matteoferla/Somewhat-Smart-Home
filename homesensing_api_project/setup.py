@@ -9,9 +9,9 @@ requires = [
 ]
 
 setup(
-    name='homesensing api project',
+    name='homesensing_api_project',
     version='0.0',
-    description='homesensing api project',
+    description='homesensing_api_project',
     long_description=open(os.path.join(here, 'README.md')).read(),
     classifiers=[
         'Programming Language :: Python',
