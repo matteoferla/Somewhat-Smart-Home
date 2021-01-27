@@ -12,7 +12,7 @@ import logging
 log = logging.getLogger(__name__)
 
 class Schedule:
-    lock = Lock() #stop interferring with each other notes.
+    lock = Lock() #stop interferring with each other_notes.
 
     def __init__(self, interval_minutes=10, background=True):
         signal(SIGINT, self.death_handler)

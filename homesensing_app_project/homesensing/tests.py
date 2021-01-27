@@ -55,7 +55,7 @@ class TestMyViewSuccessCondition(BaseTest):
         from .views.default import my_view
         info = my_view(dummy_request(self.session))
         self.assertEqual(info['one'].name, 'one')
-        self.assertEqual(info['project'], 'homesensing app project')
+        self.assertEqual(info['project'], 'homesensing_app_project')
 
 
 class TestMyViewFailureCondition(BaseTest):

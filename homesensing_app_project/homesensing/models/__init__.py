@@ -56,7 +56,7 @@ def includeme(config):
     """
     Initialize the model for a Pyramid app.
 
-    Activate this setup using ``config.include('homesensing app project.models')``.
+    Activate this setup using ``config.include('homesensing_app_project.models')``.
 
     """
     settings = config.get_settings()
