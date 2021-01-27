@@ -9,8 +9,8 @@
     <div class="jumbotron">
         <h1 class="display-4">Environmental measurements</h1>
         <p class="lead">Raspberry Pi sensors from across the house</p>
-        <hr class="my-4">
-        <p>TODO: re-add URL query for specific range.</p>
+        ## <hr class="my-4">
+        ## <p></p>
     </div>
 
     <div class="row">
