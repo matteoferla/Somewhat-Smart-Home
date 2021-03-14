@@ -6,6 +6,16 @@ $(document).ready(() => {
     window.measurements.getData(7);
     window.measurements.getPhotos(7);
 
+    // refresh
+    window.timer = setInterval(()=> {
+                                            window.measurements = new Measurements();
+                                            window.measurements.getNights(7);
+                                            window.measurements.getData(7);
+                                            window.measurements.getPhotos(7);
+                                            },
+                                60*60*1e3);
+
+
     $('#changeRange button').click((event) => {
             const delta = parseInt($(event.target).data('delta'));
             window.measurements.getNights(delta);
