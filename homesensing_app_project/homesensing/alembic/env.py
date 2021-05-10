@@ -3,7 +3,7 @@ from alembic import context
 from pyramid.paster import get_appsettings, setup_logging
 from sqlalchemy import engine_from_config
 
-from homesensing.models.meta import Base
+from homesensing_app_project.models.meta import Base
 
 config = context.config
 
