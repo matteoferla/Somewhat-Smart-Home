@@ -18,7 +18,8 @@ requires = [
     'SQLAlchemy',
     'transaction',
     'zope.sqlalchemy',
-    'pygifsicle'
+    'pygifsicle',
+    'imageio'
 ]
 
 tests_require = [
