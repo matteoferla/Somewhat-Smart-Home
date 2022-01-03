@@ -118,7 +118,7 @@ The above is fine, but it is nice to know who is who:
     do
     echo 'reporting...'
     HOST_IP=$(hostname -I)
-    PAYLOADSLACK='{"text":"$PI_NAME '$HOST_IP'"}'
+    PAYLOADSLACK='{"text":"'$PI_NAME' '$HOST_IP'"}'
     curl -X POST -H 'Content-type: application/json' --data "$PAYLOADSLACK" $SLACKHOOK
     if [ $? -eq 0 ]
     then
