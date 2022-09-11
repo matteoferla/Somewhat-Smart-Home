@@ -4,6 +4,9 @@ This is mostly a collection of code I copy paste a lot.
 
 ## Connection
 
+Nowdays with the _Rasperry Pi Imager_ one presses the cog and configures everything, 
+anything all at once, so these steps are not needed —kept for historical purposes.
+
 Make SSH on freshly flashed
 
     touch /Volumes/boot/ssh
@@ -47,11 +50,22 @@ Berryconda is good, but is limited to 3.6 max and does not allow SD card switchi
 
 ## Jupyter
 
-### Tweak jupyter
+Jupyter notebook server, run via `jupyter notebook` has been superseeded by `jupyter-lab`.
+Below are two choices, `jupyter-lab` or `jupyter` server.
 
-Make sure Jupyter is installed —previous block. Add password:
+### Jupyter-lab
+
+    pip install requests jupyter ipywidgets jupyterthemes Pygments
+    pip install jupyterlab jupyterlab-widgets jupyterlab-mathjax3
+    jupyter labextension install jupyterlab-plotly
+    # jupyter labextension install plotlywidget
+    sudo apt-get -y install nodejs
+
+The password is still set the olde way:
 
     jupyter notebook password
+
+### Vanilla jupyter
     
 Having the same theme of a notebook as another one can be confusing
 
@@ -64,6 +78,9 @@ To list themes:
     
 I put screenshot of these on [my blog](http://blog.matteoferla.com/2020/11/remote-notebooks-and-jupyter-themes.html).
 
+Make sure Jupyter is installed —previous block. Add password:
+
+    jupyter notebook password
 
 ### Jupyer service
 
