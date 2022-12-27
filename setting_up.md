@@ -4,7 +4,7 @@ This is mostly a collection of code I copy paste a lot.
 
 ## Connection
 
-Nowdays with the _Rasperry Pi Imager_ one presses the cog and configures everything, 
+Nowadays with the _Rasperry Pi Imager_ one presses the cog icon and configures everything, 
 anything all at once, so these steps are not needed —kept for historical purposes.
 
 Make SSH on freshly flashed
@@ -44,7 +44,7 @@ Using system python3, namely `/usr/bin/python3` as opposed to berryconda:
     sudo apt-get -y  install python3-dev
     sudo apt-get -y  install python3-pip
     sudo apt-get -y install python3-sqlalchemy
-    sudo pip3 install jupyter RPi.GPIO waitress flask Flask-Ask Flask-SQLAlchemy beautifulsoup4 Pillow picamera adafruit-circuitpython-dht adafruit-blinka
+    sudo pip3 install -q jupyter RPi.GPIO waitress flask Flask-Ask Flask-SQLAlchemy beautifulsoup4 Pillow picamera adafruit-circuitpython-dht adafruit-blinka
 
 Berryconda is good, but is limited to 3.6 max and does not allow SD card switching between arm6 and arm7 (`Illegal operation`).
 
