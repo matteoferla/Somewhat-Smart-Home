@@ -5,8 +5,9 @@ from .base import BaseHall
 
 
 class RainGauge(BaseHall):
+
     def __init__(self, pin_id: Union[board.pin.Pin, int] = board.D18,
-                 window:int=60 * 5,
+                 window: int = 60 * 60,
                  volume: float = 0.0085,
                  area: float = 0.0063615):
         super().__init__(pin_id=pin_id, window=window)
@@ -22,4 +23,4 @@ class RainGauge(BaseHall):
 
     @property
     def rate(self) -> float:
-        return self.frequency * self.volume / self.area  # liter per m2 per sec
+        return self.total * self.volume / self.area  # liter per m2 per sec

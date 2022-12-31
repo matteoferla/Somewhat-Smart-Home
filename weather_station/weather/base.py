@@ -6,7 +6,8 @@ from statistics import median
 
 
 class BaseHall:
-    def __init__(self, pin_id: Union[board.pin.Pin, int], window:int):
+
+    def __init__(self, pin_id: Union[board.pin.Pin, int], window: int):
         """
         Initialising this class results in
         the thread ``_counter`` taking timepoints stored in ``self.times``.
@@ -29,15 +30,23 @@ class BaseHall:
         self.measuring = False  # kills ``self._counter``.
 
     @property
+    def recent_measurements(self) -> List[float]:
+        now: float = time.time()
+        return [t for t in self.times if now - t < self.window]
+
+    @property
+    def total(self) -> int:
+        return len(self.recent_measurements)
+
+    @property
     def period(self) -> float:
         """
         length of a cycle
         """
-        now: float = time.time()
-        recents: List[float] = [t for t in self.times if now - t < self.window]
-        if len(recents) < 2:  # never spun or no spin in 5 minutes...
+        recent_measurements: List[float] = self.recent_measurements
+        if len(recent_measurements) < 2:  # never spun or no spin in 5 minutes...
             return 0
-        intervals: List[float] = [post - pre for pre, post in zip(recents[:-1], recents[1:])]
+        intervals: List[float] = [post - pre for pre, post in zip(recent_measurements[:-1], recent_measurements[1:])]
         return median(intervals)
 
     @property
@@ -46,4 +55,4 @@ class BaseHall:
         f in Hertz. cycles per second
         """
         p = self.period
-        return 1/p if p != 0 else 0
+        return 1 / p if p != 0 else 0
