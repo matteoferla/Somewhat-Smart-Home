@@ -40,13 +40,15 @@ Git:
     
 Using system python3, namely `/usr/bin/python3` as opposed to berryconda:
 
-    sudo apt-get -y install python3-pandas
-    sudo apt-get -y  install python3-dev
-    sudo apt-get -y  install python3-pip
-    sudo apt-get -y install python3-sqlalchemy
-    sudo pip3 install -q jupyter RPi.GPIO waitress flask Flask-Ask Flask-SQLAlchemy beautifulsoup4 Pillow picamera adafruit-circuitpython-dht adafruit-blinka
+    # become root
+    sudo su -    
+    # install pip
+    apt-get -y install python3-dev python3-pip # no longer needed via apt python3-pandas python3-sqlalchemy
+    # some token modules:
+    python3 -m pip install -q jupyter RPi.GPIO waitress flask Flask-Ask Flask-SQLAlchemy beautifulsoup4 Pillow picamera adafruit-circuitpython-dht adafruit-blinka
 
 Berryconda is good, but is limited to 3.6 max and does not allow SD card switching between arm6 and arm7 (`Illegal operation`).
+For Pi Zero in particular, I prefix the pip installation with `ARCHFLAGS='-arch arm6' python3 -m pip ...`
 
 ## Jupyter
 
@@ -61,9 +63,9 @@ Below are two choices, `jupyter-lab` or `jupyter` server.
     # jupyter labextension install plotlywidget
     sudo apt-get -y install nodejs
 
-The password is still set the olde way:
+The password is set:
 
-    jupyter notebook password
+    jupyter server password
 
 ### Vanilla jupyter
     
