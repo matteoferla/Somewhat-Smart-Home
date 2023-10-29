@@ -280,7 +280,7 @@ class Measurements {
                                                                   'y0': 0,
                                                                   'x1': dawn,
                                                                   'y1': 1,
-                                                                  'fillcolor': '#191970',  // midnightblue
+                                                                  'fillcolor': '#b3b3ff',  // midnightblue #191970 was too bright
                                                                   'opacity': 0.4,
                                                                   'line': {'width': 0},
                                                                   'layer': 'below'
