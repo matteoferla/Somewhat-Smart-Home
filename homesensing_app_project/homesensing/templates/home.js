@@ -266,7 +266,8 @@ class Measurements {
                     name: sensor,
                     type: 'scatter',
                     line: this.getLineDetails(sensor),
-                    mode: 'lines'
+                    mode: 'lines',
+                    visible: 'legendonly',
                 })
             );
 
